@@ -59,12 +59,12 @@ swiftmailer:
     spool:     { type: memory }
 
 joost_nijhuis_package_manager:
-    app_name: "{RepositoryName}"
-    company_name: "{CompanyName}"
-    #company_url: "http://www.example.com"
-    parse_only_stable: true
-    enable_cache: true
-    #packagist_url: "http://packagist.org"
+    app_name: %app_name%
+    company_name: %company_name%
+    company_url: %company_url%
+    parse_only_stable: %parse_only_stable%
+    enable_cache: %enable_cache%
+    packagist_url: %packagist_url%
     private_packages_config_file: %kernel.root_dir%/config/repository_config.json
     private_packages_output_file: %kernel.root_dir%/../data/private_packages.json
     private_packages_data_dir: %kernel.root_dir%/../data/packages

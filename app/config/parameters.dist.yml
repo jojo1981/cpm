@@ -13,3 +13,15 @@ parameters:
 
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    app_name:          "{RepositoryName}"
+    company_name:      "{CompanyName}"
+    company_url:       "http://www.example.com"
+    parse_only_stable: true
+    enable_cache:      true
+    packagist_url:     "http://packagist.org"
+    private_packages_config_file: %kernel.root_dir%/config/repository_config.json
+    private_packages_output_file: %kernel.root_dir%/../data/private_packages.json
+    private_packages_data_dir:    %kernel.root_dir%/../data/packages
+    packagist_cache_dir:          %kernel.root_dir%/../data/cache
+    tmp_dir:                      %kernel.root_dir%/tmp
