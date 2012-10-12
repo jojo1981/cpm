@@ -9,3 +9,4 @@
 /data/*
 /app/config/parameters.ini
 /app/config/repository_config.json
+/composer.phar
