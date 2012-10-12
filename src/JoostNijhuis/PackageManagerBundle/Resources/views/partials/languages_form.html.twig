@@ -1,0 +1,38 @@
+{#
+/**
+ * This file is part of the Composer Package Manager.
+ *
+ * (c) Joost Nijhuis <jnijhuis81@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+#}
+{% form_theme form 'JoostNijhuisPackageManagerBundle:Form:form_label.html.twig' %}
+<div id="language_switch">
+    <form action="{{ path(app.request.attributes.get('_route'), { '_locale': app.request.get('_locale')}) }}" method="post" {{ form_enctype(form) }}>
+        {{ form_label(form.Language) }}
+        {{ form_widget(form.Language) }}
+        {% include 'JoostNijhuisPackageManagerBundle:partials:flag_'~ app.request.get('_locale') ~'.html.twig' ignore missing %}
+    </form>
+</div>
+<script>
+
+    var current_locale = '{{ app.request.get('_locale') }}';
+
+    $(document).ready(function(){
+
+        $("#form_Language").unbind('change').bind('change', function() {
+
+            var new_locale = $(this).find(':selected').val();
+            
+            if (current_locale != new_locale) {
+                var url = $(location).attr('href');
+                url = url.replace(current_locale, new_locale);
+                window.location = url;
+            }
+        });
+
+    });
+
+</script>

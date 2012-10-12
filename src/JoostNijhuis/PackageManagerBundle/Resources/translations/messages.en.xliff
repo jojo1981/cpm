@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="1">
+                <source>f.default.license</source>
+                <target>License</target>
+            </trans-unit>
+            <trans-unit id="2">
+                <source>f.default.authors</source>
+                <target>Authors</target>
+            </trans-unit>
+            <trans-unit id="3">
+                <source>f.default.releases</source>
+                <target>Releases</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>f.copyrights</source>
+                <target><![CDATA[Copyrights <a href="%company_url%" target="%target%">%company_name%</a> %year%]]></target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>f.language_switcher.choose.language</source>
+                <target>Choose language:</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>f.title_code_block</source>
+                <target>Adding the repository to</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

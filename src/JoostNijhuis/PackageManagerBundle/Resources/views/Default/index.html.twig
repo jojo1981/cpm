@@ -1,0 +1,27 @@
+{#
+/**
+ * This file is part of the Composer Package Manager.
+ *
+ * (c) Joost Nijhuis <jnijhuis81@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+#}
+
+{% extends 'JoostNijhuisPackageManagerBundle::layout.html.twig' %}
+{% block content %}
+    <div id="hd">
+
+        <h2>{{ appName }} Composer Repository</h2>
+    </div>
+    <div id="bd">
+        <div class="yui-g">
+            {% trans %}f.title_code_block{% endtrans %} <em>composer.json</em>:
+            <pre><code>{{ json_example }}</code></pre>
+            {% for package in arrPackages %}
+                {% include 'JoostNijhuisPackageManagerBundle:Default:package.html.twig' %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

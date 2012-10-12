@@ -1,0 +1,8 @@
+{% set copyrights_year = "now"|date("Y") %}
+{% if CompanyUrl is not defined %}
+    {% set CompanyUrl = '#' %}
+    {% set target = '_self' %}
+{%  else %}
+    {% set target = '_blank' %}
+{%  endif %}
+<p><small>{% trans with { '%year%': copyrights_year, '%company_name%': companyName, '%company_url%': CompanyUrl, '%target%': target } %}f.copyrights{% endtrans %}</small></p>

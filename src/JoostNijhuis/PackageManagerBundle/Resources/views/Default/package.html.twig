@@ -1,0 +1,38 @@
+{#
+/**
+ * This file is part of the Composer Package Manager.
+ *
+ * (c) Joost Nijhuis <jnijhuis81@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+#}
+<h3>{{ package.packagename }}</h3>
+<p>{{ package.packagedescription }}</p>
+<table>
+    <tr>
+        <th>{% trans %}f.default.license{% endtrans %}</th>
+        <td>
+        {% for license in package.licenses %}
+        {{ license }}
+        {% endfor %}
+        </td>
+    </tr>
+    <tr>
+        <th>{% trans %}f.default.authors{% endtrans %}</th>
+        <td>
+        {% for author in package.authors %}
+        <a href="{{ author.homepage }}">{{ author.name }}</a>
+        {% endfor %}
+        </td>
+    </tr>
+    <tr>
+        <th>{% trans %}f.default.releases{% endtrans %}</th>
+        <td>
+        {% for release in package.releases %}
+        <a href="{{ release.url }}">{{ release.version }}</a>
+        {% endfor %}
+        </td>
+    </tr>
+</table>

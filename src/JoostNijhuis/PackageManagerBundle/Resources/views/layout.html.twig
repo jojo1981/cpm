@@ -1,0 +1,24 @@
+{#
+/**
+ * This file is part of the Composer Package Manager.
+ *
+ * (c) Joost Nijhuis <jnijhuis81@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+#}
+{% extends '::base.html.twig' %}
+{% set copyrights_year = "now"|date("Y") %}
+{% block title %}{{ appName }} Composer Repository{% endblock %}
+{% block stylesheets %}
+{% stylesheets '@JoostNijhuisPackageManagerBundle/Resources/public/css/style.css' output='/js/sqills/packagemanager/css/main' filter='?yui_css' %}
+<link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen, projection" />
+{% endstylesheets %}
+{% image '@JoostNijhuisPackageManagerBundle/Resources/public/favicon.ico' output='/favicon.ico' %}
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
+{% endimage %}
+{% endblock %}
+{% block languages %}
+{{ language_selector() }}
+{% endblock %}

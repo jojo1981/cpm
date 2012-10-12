@@ -1,0 +1,92 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="joost_nijhuis_package_manager.locale_listener_class">JoostNijhuis\PackageManagerBundle\EventListener\LocaleListener</parameter>
+        <parameter key="joost_nijhuis_package_manager.language_switcher_class">JoostNijhuis\PackageManagerBundle\Twig\LanguageSwitcher</parameter>
+        <parameter key="joost_nijhuis_package_manager.twig_extention_class">JoostNijhuis\PackageManagerBundle\Twig\Extension\MyTwigExtension</parameter>
+        <parameter key="joost_nijhuis_package_manager.path_helper_class">JoostNijhuis\PackageManagerBundle\Services\PathHelper</parameter>
+        <parameter key="joost_nijhuis_package_manager.repository_build_handler_class">JoostNijhuis\PackageManagerBundle\ComposerRepository\BuildHandler</parameter>
+        <parameter key="joost_nijhuis_package_manager.cache_driver_class">JoostNijhuis\PackageManagerBundle\Packagist\CacheDriverFile</parameter>
+        <parameter key="joost_nijhuis_package_manager.download_handler_class">JoostNijhuis\PackageManagerBundle\Packages\DownloadHandler</parameter>
+        <parameter key="joost_nijhuis_package_manager.private_packages_handler_class">JoostNijhuis\PackageManagerBundle\Packages\PrivatePackagesHandler</parameter>
+        <parameter key="joost_nijhuis_package_manager.packagist_handler_class">JoostNijhuis\PackageManagerBundle\Packagist\PackagistHandler</parameter>
+        <parameter key="joost_nijhuis_package_manager.cache_driver_class">JoostNijhuis\PackageManagerBundle\Packagist\CacheDriverFile</parameter>
+        <parameter key="joost_nijhuis_package_manager.cache_handler_class">JoostNijhuis\PackageManagerBundle\Packagist\CacheHandler</parameter>
+        <parameter key="joost_nijhuis_package_manager.svn_authentication_class">JoostNijhuis\PackageManagerBundle\Packages\SvnAuthentication</parameter>
+    </parameters>
+
+    <services>
+
+        <service id="joost_nijhuis_package_manager_locale_listener" class="%joost_nijhuis_package_manager.locale_listener_class%">
+            <argument type="service" id="service_container" />
+            <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" priority="-255" />
+        </service>
+
+        <service id="joost_nijhuis_package_manager.language_switcher" class="%joost_nijhuis_package_manager.language_switcher_class%">
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
+
+        <service id="joost_nijhuis_package_manager_twig_extension" class="%joost_nijhuis_package_manager.twig_extention_class%" public="false">
+            <argument type="service" id="joost_nijhuis_package_manager.language_switcher" />
+            <argument type="string">%joost_nijhuis_package_manager.params%</argument>
+            <tag name="twig.extension" />
+        </service>
+
+        <service id="joost_nijhuis_package_manager_cache_driver" class="%joost_nijhuis_package_manager.cache_driver_class%" public="false">
+            <argument type="string">%joost_nijhuis_package_manager.packagist_cache_dir%</argument>
+        </service>
+
+        <service id="joost_nijhuis_package_manager_cache_handler" class="%joost_nijhuis_package_manager.cache_handler_class%">
+            <argument type="service" id="joost_nijhuis_package_manager_cache_driver" />
+            <argument type="string">%joost_nijhuis_package_manager.packagist_url%</argument>
+        </service>
+
+        <service id="joost_nijhuis_package_manager_packagist_handler" class="%joost_nijhuis_package_manager.packagist_handler_class%">
+            <argument type="string">%joost_nijhuis_package_manager.packagist_url%</argument>
+            <call method="setParseOnlyStable">
+                <argument type="string">%joost_nijhuis_package_manager.parse_only_stable%</argument>
+            </call>
+            <call method="setEnableCache">
+                <argument type="string">%joost_nijhuis_package_manager.enable_cache%</argument>
+            </call>
+            <call method="setPrivatePackagesHandler">
+                <argument type="service" id="joost_nijhuis_package_manager_private_packages_handler" />
+            </call>
+            <call method="setCacheHandler">
+                <argument type="service" id="joost_nijhuis_package_manager_cache_handler" />
+            </call>
+        </service>
+
+        <service id="joost_nijhuis_package_manager_repository_build_handler" class="%joost_nijhuis_package_manager.repository_build_handler_class%">
+            <argument type="string">%joost_nijhuis_package_manager.private_packages_config_file%</argument>
+            <argument type="string">%joost_nijhuis_package_manager.private_packages_output_file%</argument>
+            <call method="setSvnAuthentication">
+                <argument type="service" id="joost_nijhuis_package_manager.svn_authentication" />
+            </call>
+        </service>
+
+        <service id="joost_nijhuis_package_manager.svn_authentication" class="%joost_nijhuis_package_manager.svn_authentication_class%">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="joost_nijhuis_package_manager_download_handler" class="%joost_nijhuis_package_manager.download_handler_class%">
+            <argument type="string">%joost_nijhuis_package_manager.private_packages_data_dir%</argument>
+            <argument type="string">%joost_nijhuis_package_manager.tmp_dir%</argument>
+            <call method="setSvnAuthentication">
+                <argument type="service" id="joost_nijhuis_package_manager.svn_authentication" />
+            </call>
+        </service>
+
+        <service id="joost_nijhuis_package_manager_private_packages_handler" class="%joost_nijhuis_package_manager.private_packages_handler_class%">
+            <argument type="string">%joost_nijhuis_package_manager.private_packages_output_file%</argument>
+        </service>
+
+    </services>
+
+</container>

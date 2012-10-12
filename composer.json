@@ -1,0 +1,48 @@
+{
+    "name": "Joost Nijhuis Composer Package Manager",
+    "description": "Joost Nijhuis Composer Package Manager",
+    "keywords": [
+        "composer",
+        "package",
+        "manager",
+        "repository",
+        "private"
+    ],
+    "type": "symfony-application",
+    "license": [
+        "MIT"
+    ],
+    "authors": [
+        {
+            "name": "Joost Nijhuis",
+            "email": "jnijhuis81@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "jnijhuis81@gmail.com"
+    },
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    },
+    "require": {
+        "php":                           ">=5.3.3",
+        "symfony/symfony":               "2.1.*",
+        "doctrine/orm":                  ">=2.2.3,<2.4-dev",
+        "doctrine/doctrine-bundle":      "1.0.*",
+        "twig/extensions":               "1.0.*",
+        "symfony/assetic-bundle":        "2.1.*",
+        "symfony/swiftmailer-bundle":    "2.1.*",
+        "symfony/monolog-bundle":        "2.1.*",
+        "sensio/distribution-bundle":    "2.1.*",
+        "sensio/framework-extra-bundle": "2.1.*",
+        "sensio/generator-bundle":       "2.1.*",
+        "jms/security-extra-bundle":     "1.2.*",
+        "jms/di-extra-bundle":           "1.1.*",
+        "composer/composer":             "dev-master",
+        "monolog/monolog":               "1.2.*"
+    },
+	"minimum-stability": "dev"
+}

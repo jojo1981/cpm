@@ -1,0 +1,3 @@
+JoostNijhuisPackageManagerBundle:
+    resource: "@JoostNijhuisPackageManagerBundle/Resources/config/routing.xml"
+    prefix:   /
