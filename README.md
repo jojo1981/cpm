@@ -10,23 +10,23 @@ Also your protected against the removal of packages by the vendor when your soft
 on it. You don't want to discover this while you're deploying on production, aren't you?
 
 
-1) Installing the Composer Package Manager application
-----------------------------------
+1. Installing the Composer Package Manager application
+===========
 
-### Requirements
+### 1.1 Requirements
 
 GIT should be installed, and accessible from your PATH.
 http://git-scm.com
 
 SVN client application should be installed
 
-### Download the application
+### 1.2 Download the application
 
 Get from GitHup: https://github.com/jojo1981/cpm.git
 
     git clone https://github.com/jojo1981/cpm.git
 
-### Use Composer to install dependencies
+### 1.3 Use Composer to install dependencies
 
 This application uses Composer to manage its dependencies
 
@@ -61,7 +61,7 @@ Run the `update` command to update the composer.lock file and install the depend
 
     php composer.phar update
 
-### Create directories
+### 1.4 Create directories
 
 The following directories need to be created:
 
@@ -71,7 +71,7 @@ The following directories need to be created:
 - ./data/cache
 - ./data/packages
 
-### Set file permissions for the user under which the webserver runs
+### 1.5 Set file permissions for the user under which the webserver runs
 
 Make sure that the user under which the webserver runs, mostly `apache` or `www-data` has write access on the following directories:
 
@@ -80,7 +80,7 @@ Make sure that the user under which the webserver runs, mostly `apache` or `www-
 - ./app/cache
 - ./data
 
-### Setup configuration
+### 1.6 Setup configuration
 
 Create the `parameters.yml` file by copying ./app/config/parameters.dist.yml to ./app/config/parameters.yml
 cd c:\
@@ -106,7 +106,7 @@ Set application environment by editing `.htaccess` file, change the value after:
 
 Make sure the Apache vhost configuration has the option: `AllowOverride All` in order to use the .htaccess file.
 
-### Apache - VirtualHost
+### 1.7 Apache - VirtualHost
 
 You can add the following VirtualHost to your apache virtualhost configuration file (for instance http-vhosts.conf)
 
@@ -135,9 +135,9 @@ http-vhosts.conf:
 
     </VirtualHost>
     
-### Setup database
+### 1.8 Setup database
 
-1) Setup database connection
+1.8.1 Setup database connection
 
 Edit the file `./app/configs/parameters.yml`
 Change the database settings:
@@ -152,7 +152,7 @@ Change the database settings:
         
 The ~ means use default MySQL port (3306), you can set a different port if your database server is listening to a different port.
 
-2) Build database
+1.8.2 Build database
 
 Run the following command to generate the database structure:
     
