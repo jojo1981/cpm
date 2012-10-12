@@ -159,7 +159,10 @@ class PackagistHandler
                 }
                 $packageData[$version] = $package;
             }
-            $arrData['packages'][$packageName] = $packageData;
+            $data = array('packages' => array(
+                $packageName => $packageData
+            ));
+            $arrData = array_merge($arrData, $data);
         }
 
         return json_encode($arrData);
