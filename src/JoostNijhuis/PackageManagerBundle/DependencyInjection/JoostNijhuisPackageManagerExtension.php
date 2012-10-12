@@ -44,11 +44,11 @@ class JoostNijhuisPackageManagerExtension extends Extension
         $container->setParameter('joost_nijhuis_package_manager.parse_only_stable', $config['parse_only_stable']);
         $container->setParameter('joost_nijhuis_package_manager.enable_cache', $config['enable_cache']);
         $container->setParameter('joost_nijhuis_package_manager.packagist_url', $config['packagist_url']);
-        $container->setParameter('joost_nijhuis_package_manager.private_packages_config_file', realpath($config['private_packages_config_file']));
-        $container->setParameter('joost_nijhuis_package_manager.private_packages_output_file', realpath($config['private_packages_output_file']));
-        $container->setParameter('joost_nijhuis_package_manager.private_packages_data_dir', realpath($config['private_packages_data_dir']));
-        $container->setParameter('joost_nijhuis_package_manager.packagist_cache_dir', realpath($config['packagist_cache_dir']));
-        $container->setParameter('joost_nijhuis_package_manager.tmp_dir', realpath($config['tmp_dir']));
+        $container->setParameter('joost_nijhuis_package_manager.private_packages_config_file', $config['private_packages_config_file']);
+        $container->setParameter('joost_nijhuis_package_manager.private_packages_output_file', $config['private_packages_output_file']);
+        $container->setParameter('joost_nijhuis_package_manager.private_packages_data_dir', $config['private_packages_data_dir']);
+        $container->setParameter('joost_nijhuis_package_manager.packagist_cache_dir', $config['packagist_cache_dir']);
+        $container->setParameter('joost_nijhuis_package_manager.tmp_dir', $config['tmp_dir']);
         $container->setParameter('joost_nijhuis_package_manager.params', $config);
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
