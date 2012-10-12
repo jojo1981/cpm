@@ -32,6 +32,16 @@ Then, use the `install` command to install the dependencies:
 
 Composer will install all the dependencies into the /vendor directory
 
+IMPORTANT: For windows users, PHP >=5.4.0 must be installed in order to let the git downloader to work
+when not triggered by a cli script but by a browser call.
+
+Edit composer.json
+
+change: "php":                           ">=5.3.3",
+into:   "php":                           ">=5.4.*",
+
+Run php composer.phar update
+
 2) Configuration
 -------------------------------
 
