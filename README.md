@@ -4,9 +4,9 @@ Composer Package Manager
 The Composer Package Manager application can be used to create a private
 composer repository to manage private packages. Also this application function
 as a proxy for packagist.org. Packages can be stored locally for backup purposes.
-With this application you can garantee that deploymetns on production servers doesn't
+With this application you can guarantee that deployments on production servers doesn't
 depends on the availability of packagist.org or where the used packages are located.
-Also your protected agains the removal of packages by the vendor when your software depends
+Also your protected against the removal of packages by the vendor when your software depends
 on it. You don't want to discover this while you're deploying on production, aren't you?
 
 
