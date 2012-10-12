@@ -2,7 +2,6 @@
 /.settings
 /.buildpath
 /.project
-/app/bootstrap*
 /app/cache/*
 /app/logs/*
 /vendor/*
