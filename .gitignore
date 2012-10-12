@@ -1,0 +1,11 @@
+/.idea
+/.settings
+/.buildpath
+/.project
+/app/bootstrap*
+/app/cache/*
+/app/logs/*
+/vendor/*
+/data/*
+/app/config/parameters.ini
+/app/config/repository_config.json
