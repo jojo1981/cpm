@@ -6,7 +6,7 @@
 /app/logs/*
 /vendor/*
 /data/*
-/app/config/parameters.ini
+/app/config/parameters.yml
 /app/config/repository_config.json
 /composer.phar
 /web/.htaccess
