@@ -17,50 +17,104 @@ use Composer\Package\Version\VersionParser;
 use JoostNijhuis\PackageManagerBundle\Packages\PrivatePackagesHandler;
 use JoostNijhuis\PackageManagerBundle\Packages\PackageFactory;
 
+/**
+ * The Packagist Handler class responsible for retrieving
+ * all packages data from packagist.org
+ */
 class PackagistHandler
 {
-    
+
+    /**
+     * @var string
+     */
     protected $url;
-    
+
+    /**
+     * @var bool
+     */
     protected $parseOnlyStable = true;
 
+    /**
+     * @var bool
+     */
     protected $enableCache = false;
-    
+
+    /**
+     * @var null|\JoostNijhuis\PackageManagerBundle\Packages\PrivatePackagesHandler
+     */
     protected $privatePackagesHandler;
 
+    /**
+     * @var null|CacheHandler
+     */
     protected $cacheHandler;
 
+    /**
+     * C'tor
+     *
+     * @param string $url [optional] The url to use for retrieving packages data
+     */
     public function __construct($url = null)
     {
         $url = (empty($url) ? 'http://packagist.org' : $url);
         $this->url  = $url;
     }
-    
+
+    /**
+     * Enable parse only stable packages to parse only packages
+     * which have a stability other than dev, if disable the all
+     * packages will be parsed. So the original url will be replaced
+     * by one pointing to this application.
+     *
+     * @param bool $parseOnlyStable
+     */
     public function setParseOnlyStable($parseOnlyStable)
     {
         $this->parseOnlyStable = (bool) $parseOnlyStable;
     }
 
+    /**
+     * @param $enableCache
+     */
     public function setEnableCache($enableCache)
     {
         $this->enableCache = $enableCache;
     }
-    
+
+    /**
+     * Inject a PrivatePackagesHandler instance for attaching
+     * private packages to the ones retrieved from packagist.org or the configured
+     * url.
+     *
+     * @param \JoostNijhuis\PackageManagerBundle\Packages\PrivatePackagesHandler $privatePackagesHandler
+     */
     public function setPrivatePackagesHandler(PrivatePackagesHandler $privatePackagesHandler)
     {
         $this->privatePackagesHandler = $privatePackagesHandler;
     }
 
+    /**
+     * Set Cache Handler to use, this is optionally.
+     * This class will function properly if not injected
+     *
+     * @param CacheHandler $cacheHandler
+     */
     public function setCacheHandler(CacheHandler $cacheHandler)
     {
         $this->cacheHandler = $cacheHandler;
     }
 
     /**
+     * Get package object by vendor, package name and version.
+     * returns false if no package can be found. Try
+     * to find the package in all packages retrieved by packagist.org
+     * or the configured url with all attached private packages if
+     * a PrivatePackagesHandler is injected.
+     *
      * @param string $vendor
      * @param string $package
      * @param string $version
-     * @return \Composer\Package\MemoryPackage|bool
+     * @return \Composer\Package\Package|bool
      */
     public function getPackage($vendor, $package, $version)
     {
@@ -78,7 +132,14 @@ class PackagistHandler
         
         return $objPackage;
     }
-    
+
+    /**
+     * Get all packages from packagist.org or the configured url by
+     * the constructor, also if a PrivatePackagesHandler is injected and
+     * has also packages these will be attached.
+     *
+     * @return array
+     */
     public function getAllPackages()
     {
         $arrMainData = json_decode($this->getFileContent('packages.json', false), true);
@@ -90,7 +151,16 @@ class PackagistHandler
         
         return $arrPackages;
     }
-    
+
+    /**
+     * Get file content by filename, try to get it from cache.
+     * If not retrievable from cache try to get it by an url.
+     * return false if no content can be returned.
+     *
+     * @param $fileName          The filename (no url) to get the content from
+     * @param bool $parse        Must the content be parsed, so the download url will be replaced if necessary
+     * @return bool|string       The content or false if no content can be retrieved
+     */
     public function getFileContent($fileName, $parse=true)
     {
         $content = false;
@@ -119,8 +189,12 @@ class PackagistHandler
     }
     
     /**
-     * @param string $fileName
-     * @param boolean $parse
+     * Get a Response object for a JSON file, returns false if the
+     * file can not be retrieved from an URL or from the cacheHandler
+     * if a cacheHandler is injected
+     *
+     * @param string $fileName       The filename (not url) to get a response for
+     * @param boolean $parse         Must the content be parsed, so the download url will be replaced if necessary
      * @return boolean|\Symfony\Component\HttpFoundation\Response
      */
     public function getResponse($fileName, $parse=true)
@@ -136,14 +210,22 @@ class PackagistHandler
         
         return new Response($content, 200, $headers);
     }
-    
+
+    /**
+     * Attach the private packages retrieved by the injected
+     * privatePackagesHandler if injected, if not the original string
+     * will be returned.
+     *
+     * @param string $content         JSON string
+     * @return string                 JSON string
+     */
     protected function attachPrivatePackageData($content)
     {
         $arrData = json_decode($content, true);
-        $arrPrivatepackages = $this->privatePackagesHandler->getPrivatePackages();
+        $arrPrivatePackages = $this->privatePackagesHandler->getPrivatePackages();
 
         $data = array('packages');
-        foreach($arrPrivatepackages as $packageName => $packageData) {
+        foreach($arrPrivatePackages as $packageName => $packageData) {
             foreach ($packageData as $version => $package) {
                 if (isset($package['dist'])) {
                     if ($package['dist']['type'] == 'svn') {
@@ -165,7 +247,16 @@ class PackagistHandler
 
         return json_encode($arrData);
     }
-    
+
+    /**
+     * Parse the json content and replaces the package source or
+     * dist data. Depending on if $this->parseOnlyStable is true then
+     * only the packages with an other stablitity as dev will be parsed
+     * if this setting is false all package will be parsed.
+     *
+     * @param string $content  JSON string with package data
+     * @return string          Parse JSON string
+     */
     protected function parseContent($content)
     {
         $request = Request::createFromGlobals();
@@ -198,7 +289,14 @@ class PackagistHandler
 
         return json_encode($arrRet);
     }
-    
+
+    /**
+     * Get the file content with curl, if succeeded return the
+     * file content if not returns false.
+     *
+     * @param string $url   The url to get the content from
+     * @return bool|string  The content or false in case no content can be returned
+     */
     protected function getFileContentWithCurl($url)
     {
         $ch = curl_init();
