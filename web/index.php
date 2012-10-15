@@ -9,19 +9,23 @@
  * file that was distributed with this source code.
  */
 
+require_once __DIR__.'/../app/bootstrap.php.cache';
+require_once __DIR__.'/../app/AppKernel.php';
+require_once __DIR__.'/../app/AppCache.php';
+
 use Symfony\Component\ClassLoader\ApcClassLoader;
 use Symfony\Component\HttpFoundation\Request;
 
 defined('APPLICATION_ENV')
 || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
 
-$loader = require_once __DIR__.'/../app/bootstrap.php.cache';
-$debug  = false;
-
 if (APPLICATION_ENV === 'prod') {
+    $loader = require __DIR__.'/../app/autoload.php';
     $loader = new ApcClassLoader('joost_nijhuis_composer_package_manager', $loader);
     $loader->register(true);
+    $debug  = false;
 } elseif (APPLICATION_ENV === 'dev') {
+    $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
     $debug = true;
 }
 
