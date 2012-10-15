@@ -146,7 +146,7 @@ class PackagistHandler
         $arrPackages = $arrMainData['packages'];
         foreach ($arrMainData['includes'] as $fileName => $sha1) {
             $arrData = json_decode($this->getFileContent($fileName, false), true);
-            $arrPackages = array_merge_recursive($arrData['packages'], $arrPackages);
+            $arrPackages = array_merge($arrData['packages'], $arrPackages);
         }
         
         return $arrPackages;
@@ -241,9 +241,8 @@ class PackagistHandler
                 }
                 $packageData[$version] = $package;
             }
-            $data['packages'][$packageName] = $packageData;
+            $arrData['packages'][$packageName] = $packageData;
         }
-        $arrData = array_merge($arrData, $data);
 
         return json_encode($arrData);
     }
