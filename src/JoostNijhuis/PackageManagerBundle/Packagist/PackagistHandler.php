@@ -142,8 +142,8 @@ class PackagistHandler
         $arrData = json_decode($content, true);
         $arrPrivatepackages = $this->privatePackagesHandler->getPrivatePackages();
 
+        $data = array('packages');
         foreach($arrPrivatepackages as $packageName => $packageData) {
-
             foreach ($packageData as $version => $package) {
                 if (isset($package['dist'])) {
                     if ($package['dist']['type'] == 'svn') {
@@ -159,11 +159,9 @@ class PackagistHandler
                 }
                 $packageData[$version] = $package;
             }
-            $data = array('packages' => array(
-                $packageName => $packageData
-            ));
-            $arrData = array_merge($arrData, $data);
+            $data['packages'][$packageName] = $packageData;
         }
+        $arrData = array_merge($arrData, $data);
 
         return json_encode($arrData);
     }
