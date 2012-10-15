@@ -19,8 +19,5 @@ monolog:
             type:  firephp
             level: info
 
-assetic:
-    java: C:\Program Files\Java\jre7\bin\java.exe
-
 #swiftmailer:
 #    delivery_address: me@example.com

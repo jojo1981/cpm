@@ -12,7 +12,7 @@
 {% set copyrights_year = "now"|date("Y") %}
 {% block title %}{{ appName }} Composer Repository{% endblock %}
 {% block stylesheets %}
-{% stylesheets '@JoostNijhuisPackageManagerBundle/Resources/public/css/style.css' output='/js/sqills/packagemanager/css/main' filter='?yui_css' %}
+{% stylesheets '@JoostNijhuisPackageManagerBundle/Resources/public/css/style.css' output='/js/sqills/packagemanager/css/main' %}
 <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen, projection" />
 {% endstylesheets %}
 {% image '@JoostNijhuisPackageManagerBundle/Resources/public/favicon.ico' output='/favicon.ico' %}

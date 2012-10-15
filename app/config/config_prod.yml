@@ -18,5 +18,3 @@ monolog:
             path:  %kernel.logs_dir%/%kernel.environment%.log
             level: debug
 
-assetic:
-    java: /usr/bin/java

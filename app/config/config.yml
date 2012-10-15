@@ -27,7 +27,8 @@ assetic:
     debug:          %kernel.debug%
     use_controller: true
     bundles:        [ JoostNijhuisPackageManagerBundle ]
-    java: /usr/bin/java
+    java:           "/usr/bin/java"
+    #java:          "C:\Program Files\Java\jre7\bin\java.exe"
     filters:
         cssrewrite: ~
         yui_css:
@@ -62,7 +63,7 @@ joost_nijhuis_package_manager:
     app_name: "{RepositoryName}"
     company_name: "{CompanyName}"
     #company_url: "http://www.example.com"
-    parse_only_stable: true
+    parse_only_stable: false
     enable_cache: true
     #packagist_url: "http://packagist.org"
     private_packages_config_file: %kernel.root_dir%/config/repository_config.json
