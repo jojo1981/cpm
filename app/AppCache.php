@@ -14,8 +14,7 @@ require_once __DIR__.'/AppKernel.php';
 use Symfony\Bundle\FrameworkBundle\HttpCache\HttpCache;
 
 /**
- * AppCache class will be used on production
- * All Symfony2 cache files will be stored in the apc cache
+ * Manages HTTP cache objects in a Container.
  */
 class AppCache extends HttpCache
 {

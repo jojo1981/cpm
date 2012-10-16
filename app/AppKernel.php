@@ -12,6 +12,10 @@
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
+/**
+ * The Kernel is the heart of the Symfony system.
+ * It manages an environment made of bundles.
+ */
 class AppKernel extends Kernel
 {
     public function registerBundles()
