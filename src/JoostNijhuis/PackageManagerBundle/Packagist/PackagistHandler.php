@@ -143,11 +143,12 @@ class PackagistHandler
     public function getAllPackages()
     {
         $arrMainData = json_decode($this->getFileContent('packages.json', false), true);
-        $arrPackages = $arrMainData['packages'];
+        $arrPackages = array();
         foreach ($arrMainData['includes'] as $fileName => $sha1) {
             $arrData = json_decode($this->getFileContent($fileName, false), true);
-            $arrPackages = array_merge($arrData['packages'], $arrPackages);
+            $arrPackages = array_merge_recursive($arrData['packages'], $arrPackages);
         }
+        $arrPackages = array_merge($arrPackages, $arrMainData['packages']);
         
         return $arrPackages;
     }
@@ -174,7 +175,7 @@ class PackagistHandler
                 $this->cacheHandler->addFile($fileName, $content);
             }
         }
-        
+
         if ((!empty($content) || $content !== false)
             && $fileName == 'packages.json'
             && $this->privatePackagesHandler instanceof PrivatePackagesHandler) {
