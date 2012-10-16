@@ -168,20 +168,20 @@ class PackagistHandler
             $content = $this->cacheHandler->getFile($fileName);
         }
 
-        if ($content === false) {
+        if (empty($content) || $content === false) {
             $content = $this->getFileContentWithCurl($this->url . '/' . $fileName);
             if ($content !== false && $this->cacheHandler instanceof CacheHandler && $this->enableCache) {
                 $this->cacheHandler->addFile($fileName, $content);
             }
         }
         
-        if ($content !== false 
+        if ((!empty($content) || $content !== false)
             && $fileName == 'packages.json'
             && $this->privatePackagesHandler instanceof PrivatePackagesHandler) {
             $content = $this->attachPrivatePackageData($content);
         }
 
-        if ($content !== false && $parse === true) {
+        if ($content !== false && !empty($content) && $parse === true) {
             $content = $this->parseContent($content);
         }
 
