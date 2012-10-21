@@ -17,7 +17,7 @@ use JoostNijhuis\PackageManagerBundle\Twig\LanguageSwitcher;
  * A Twig Extension class which provide some extra functionality
  * to the twig template which will be used inside this bundle
  */
-class MyTwigExtension extends \Twig_Extension_Core
+class PackageManagerTwigExtension extends \Twig_Extension_Core
 {
 
     /**
