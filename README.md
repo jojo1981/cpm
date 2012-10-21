@@ -106,35 +106,10 @@ Set application environment by editing `.htaccess` file, change the value after:
 
 Make sure the Apache vhost configuration has the option: `AllowOverride All` in order to use the .htaccess file.
 
-### 1.7 Apache - VirtualHost
+### 1.7 Build bootstrap
 
-You can add the following VirtualHost to your apache virtualhost configuration file (for instance http-vhosts.conf)
+    php bin/build_bootstrap
 
-http-vhosts.conf:
-
-    <VirtualHost *:80>
-    
-        # the domain name
-        ServerName cpm.localhost
-    
-        # Change to your email address
-        ServerAdmin admin@localhost
-        
-        # Change the path to the location of cpm (add /web to the end of the path)
-        DocumentRoot "/var/www/cpm/web"
-        <Directory "/var/www/cpm/web">
-            Options -Indexes FollowSymLinks MultiViews
-            AllowOverride All
-            Order Deny,Allow
-            Deny from all
-            Allow from 127.0.0.1
-        </Directory>
-
-        ErrorLog "logs/cpm-error.log"
-        CustomLog "logs/cpm-access.log" common
-
-    </VirtualHost>
-    
 ### 1.8 Setup database
 
 1.8.1 Setup database connection
@@ -155,8 +130,37 @@ The ~ means use default MySQL port (3306), you can set a different port if your 
 1.8.2 Build database
 
 Run the following command to generate the database structure:
-    
+
     php ./app/console doctrine:schema:create --force
+
+### 1.9 Apache - VirtualHost
+
+You can add the following VirtualHost to your apache virtualhost configuration file (for instance http-vhosts.conf)
+
+http-vhosts.conf:
+
+    <VirtualHost *:80>
+
+        # the domain name
+        ServerName cpm.localhost
+
+        # Change to your email address
+        ServerAdmin admin@localhost
+
+        # Change the path to the location of cpm (add /web to the end of the path)
+        DocumentRoot "/var/www/cpm/web"
+        <Directory "/var/www/cpm/web">
+            Options -Indexes FollowSymLinks MultiViews
+            AllowOverride All
+            Order Deny,Allow
+            Deny from all
+            Allow from 127.0.0.1
+        </Directory>
+
+        ErrorLog "logs/cpm-error.log"
+        CustomLog "logs/cpm-access.log" common
+
+    </VirtualHost>
 
 2) Configuration
 -------------------------------

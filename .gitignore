@@ -10,3 +10,4 @@
 /app/config/repository_config.json
 /composer.phar
 /web/.htaccess
+/app/bootstrap*
