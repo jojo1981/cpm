@@ -26,7 +26,13 @@ Get from GitHup: https://github.com/jojo1981/cpm.git
 
     git clone https://github.com/jojo1981/cpm.git
 
-### 1.3 Use Composer to install dependencies
+### 1.3 Check Symfony2 requirements
+
+Run this command in order to check whether all requirements are met.
+
+    php app/check.php
+
+### 1.4 Use Composer to install dependencies
 
 This application uses Composer to manage its dependencies
 
@@ -61,7 +67,7 @@ Run the `update` command to update the composer.lock file and install the depend
 
     php composer.phar update
 
-### 1.4 Create directories
+### 1.5 Create directories
 
 The following directories need to be created:
 
@@ -71,7 +77,7 @@ The following directories need to be created:
 - ./data/cache
 - ./data/packages
 
-### 1.5 Set file permissions for the user under which the webserver runs
+### 1.6 Set file permissions for the user under which the webserver runs
 
 Make sure that the user under which the webserver runs, mostly `apache` or `www-data` has write access on the following directories:
 
@@ -80,7 +86,7 @@ Make sure that the user under which the webserver runs, mostly `apache` or `www-
 - ./app/cache
 - ./data
 
-### 1.6 Setup configuration
+### 1.7 Setup configuration
 
 Create the `parameters.yml` file by copying ./app/config/parameters.dist.yml to ./app/config/parameters.yml
 cd c:\
@@ -106,13 +112,13 @@ Set application environment by editing `.htaccess` file, change the value after:
 
 Make sure the Apache vhost configuration has the option: `AllowOverride All` in order to use the .htaccess file.
 
-### 1.7 Build bootstrap
+### 1.8 Build bootstrap
 
     php bin/build_bootstrap
 
-### 1.8 Setup database
+### 1.9 Setup database
 
-1.8.1 Setup database connection
+1.9.1 Setup database connection
 
 Edit the file `./app/configs/parameters.yml`
 Change the database settings:
@@ -127,13 +133,13 @@ Change the database settings:
         
 The ~ means use default MySQL port (3306), you can set a different port if your database server is listening to a different port.
 
-1.8.2 Build database
+1.9.2 Build database
 
 Run the following command to generate the database structure:
 
     php ./app/console doctrine:schema:create --force
 
-### 1.9 Apache - VirtualHost
+### 1.10 Apache - VirtualHost
 
 You can add the following VirtualHost to your apache virtualhost configuration file (for instance http-vhosts.conf)
 
