@@ -88,7 +88,7 @@ Run the `update` command to update the composer.lock file and install the depend
 
 ### 1.7 Setup configuration
 
-Create the `parameters.ini` file by copying ./app/config/parameters.dist.ini to ./app/config/parameters.ini
+Create the `parameters.yml` file by copying ./app/config/parameters.dist.yml to ./app/config/parameters.yml
 Create the `.htaccess` by copying ./web/htaccess.dist.php to ./web/.htaccess, this file is responsible for setting the application environemnt in which the
 application must run and that all request will go through the front controller: index.php
 
@@ -119,7 +119,7 @@ Make sure the Apache vhost configuration has the option: `AllowOverride All` in 
 
 1.9.1 Setup database connection
 
-Edit the file `./app/configs/parameters.ini`
+Edit the file `./app/configs/parameters.yml`
 Change the database settings:
 
     parameters:
