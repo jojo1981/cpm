@@ -142,7 +142,7 @@ Run the follwing queries on the database:
 
     INSERT INTO `languages` (`id`, `name`, `code`, `active`, `sortorder`) VALUES ('1', 'Nederlands', 'nl', '1', '1');
     INSERT INTO `languages` (`id`, `name`, `code`, `active`, `sortorder`) VALUES ('2', 'English', 'en', '1', '2');
-    INSERT INTO `languages` (`id`, `name`, `code`, `active`, `sortorder`) VALUES ('3', 'Deutch', 'de', '1', '3');
+    INSERT INTO `languages` (`id`, `name`, `code`, `active`, `sortorder`) VALUES ('3', 'Deutsch', 'de', '1', '3');
 
 ### 1.10 Apache - VirtualHost
 
