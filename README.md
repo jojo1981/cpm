@@ -26,13 +26,32 @@ Get from GitHup: https://github.com/jojo1981/cpm.git
 
     git clone https://github.com/jojo1981/cpm.git
 
-### 1.3 Check Symfony2 requirements
+### 1.3 Create directories
+
+The following directories need to be created:
+
+- ./app/tmp
+- ./app/logs
+- ./app/cache
+- ./data/cache
+- ./data/packages
+
+### 1.4 Set file permissions for the user under which the webserver runs
+
+Make sure that the user under which the webserver runs, mostly `apache` or `www-data` has write access on the following directories:
+
+- ./app/tmp
+- ./app/logs
+- ./app/cache
+- ./data
+
+### 1.5 Check Symfony2 requirements
 
 Run this command in order to check whether all requirements are met.
 
     php app/check.php
 
-### 1.4 Use Composer to install dependencies
+### 1.6 Use Composer to install dependencies
 
 This application uses Composer to manage its dependencies
 
@@ -66,25 +85,6 @@ into:
 Run the `update` command to update the composer.lock file and install the dependencies:
 
     php composer.phar update
-
-### 1.5 Create directories
-
-The following directories need to be created:
-
-- ./app/tmp
-- ./app/logs
-- ./app/cache
-- ./data/cache
-- ./data/packages
-
-### 1.6 Set file permissions for the user under which the webserver runs
-
-Make sure that the user under which the webserver runs, mostly `apache` or `www-data` has write access on the following directories:
-
-- ./app/tmp
-- ./app/logs
-- ./app/cache
-- ./data
 
 ### 1.7 Setup configuration
 
