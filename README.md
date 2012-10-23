@@ -138,6 +138,12 @@ Run the following command to generate the database structure:
 
     php ./app/console doctrine:schema:create
 
+Run the follwing queries on the database:
+
+    INSERT INTO `languages` (`id`, `name`, `code`, `active`, `sortorder`) VALUES ('1', 'Nederlands', 'nl', '1', '1');
+    INSERT INTO `languages` (`id`, `name`, `code`, `active`, `sortorder`) VALUES ('2', 'English', 'en', '1', '2');
+    INSERT INTO `languages` (`id`, `name`, `code`, `active`, `sortorder`) VALUES ('3', 'Deutch', 'de', '1', '3');
+
 ### 1.10 Apache - VirtualHost
 
 You can add the following VirtualHost to your apache virtualhost configuration file (for instance http-vhosts.conf)
