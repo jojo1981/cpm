@@ -136,7 +136,7 @@ The ~ means use default MySQL port (3306), you can set a different port if your 
 
 Run the following command to generate the database structure:
 
-    php ./app/console doctrine:schema:create --force
+    php ./app/console doctrine:schema:create
 
 ### 1.10 Apache - VirtualHost
 
