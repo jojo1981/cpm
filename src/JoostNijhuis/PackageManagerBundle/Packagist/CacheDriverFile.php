@@ -51,6 +51,11 @@ class CacheDriverFile extends CacheDriverAbstract
     {
         $fileName = $this->cacheDir . DIRECTORY_SEPARATOR . $fileName;
 
+        $dir = pathinfo($fileName, PATHINFO_DIRNAME);
+        if (is_dir($dir) === false) {
+            mkdir($dir, 0777, true);
+        }
+
         $fileHandle = fopen($fileName, 'w+', false);
         $result = fwrite($fileHandle, $fileContents);
         if ($result === false) {

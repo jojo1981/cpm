@@ -22,6 +22,7 @@ class PackagesController extends Controller
 {
     
     /**
+     * @Route("/{directory}/{file}.json")
      * @Route("/{file}.json")
      * 
      * Packages index action, this action is responsible for returning
@@ -29,13 +30,20 @@ class PackagesController extends Controller
      * 
      * @param Symfony\Component\HttpFoundation\Request $request   contains the request object automaticly injected by the dispatcher
      * @param string $file                                        contains the file without extention to use
+     * @param string $directory [optional]                        The directory if passed
      * @return Symfony\Component\HttpFoundation\Response
      * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function indexAction(Request $request, $file = '')
+    public function indexAction(Request $request, $file = '', $directory = null)
     {
+        $file .= '.json';
+        if (!empty($directory)) {
+            $file = $directory . '/'  . $file;
+        }
+
+        /* @var \JoostNijhuis\PackageManagerBundle\Packagist\PackagistHandler $objPackagistHandler */
         $objPackagistHandler = $this->get('joost_nijhuis_package_manager_packagist_handler');
-        $response = $objPackagistHandler->getResponse($file . '.json');
+        $response = $objPackagistHandler->getResponse($file);
         if ($response === false) {
             throw $this->createNotFoundException($request->getRequestUri() . ' Not found');
         }
