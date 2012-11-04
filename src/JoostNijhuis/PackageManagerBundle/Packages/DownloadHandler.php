@@ -166,10 +166,10 @@ class DownloadHandler
             $downloader = new SvnDownloader($io, $config);
             if (isset($this->svnAuthentication)) {
                 $url = ($package->getDistUrl() != '' ? $package->getDistUrl() : $package->getSourceUrl());
-                $creds = $this->svnAuthentication->getCredentialsForUrl($url);
-                if ($creds !== false) {
-                    $downloader->setUsername($creds['username']);
-                    $downloader->setPassword($creds['password']);
+                $credentials = $this->svnAuthentication->getCredentialsForUrl($url);
+                if ($credentials !== false) {
+                    $downloader->setUsername($credentials['username']);
+                    $downloader->setPassword($credentials['password']);
                 }
             }
         } else {
