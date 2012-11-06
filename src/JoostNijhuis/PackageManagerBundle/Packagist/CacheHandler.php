@@ -26,17 +26,17 @@ class CacheHandler
     protected $driver;
 
     /**
-     * @var string
+     * @var packagistHandler
      */
-    protected $url;
+    protected $packagistHandler;
 
     /**
-     * @var Symfony\Component\Console\Input\InputInterface $input
+     * @var \Symfony\Component\Console\Input\InputInterface $input
      */
     protected $input;
 
     /**
-     * @var Symfony\Component\Console\Output\OutputInterface $output
+     * @var \Symfony\Component\Console\Output\OutputInterface $output
      */
     protected $output;
 
@@ -54,10 +54,21 @@ class CacheHandler
      * @param CacheDriverInterface $driver  The cache driver which will be used for storage
      * @param string|null [optional] $url   default will be: 'http://packagist.org'
      */
-    public function __construct(CacheDriverInterface $driver, $url = null)
+    public function __construct(CacheDriverInterface $driver)
     {
         $this->driver = $driver;
-        $this->url    = (empty($url) ? 'http://packagist.org' : $url);
+    }
+
+    /**
+     * Set the packagistHandler to use for retrieving the content to
+     * renew the cache
+     *
+     * @param PackagistHandler $packagistHandler
+     * @return void
+     */
+    public function setPackagistHandler(PackagistHandler $packagistHandler)
+    {
+        $this->packagistHandler = $packagistHandler;
     }
 
     /**
@@ -102,82 +113,6 @@ class CacheHandler
     }
 
     /**
-     * Renew the files in cache
-     */
-    public function renewCache()
-    {
-        $files = $this->getFiles();
-
-        if (!empty($files)) {
-            $this->writeToOutput('Successfully parsed content from: \'packages.json\'');
-            $this->writeToOutput(sprintf(
-                'The following files need to be fetched: \'%s\'',
-                implode(', ', $files)
-            ));
-        } else {
-            $this->writeToOutput('No files need to be fetched.');
-        }
-
-        foreach ($files as $fileName) {
-            $fileContents = $this->getFileContentWithCurl($this->url . '/'. $fileName);
-            if ($this->driver->addFile($fileName, $fileContents)) {
-                $this->writeToOutput('Written file: \'' . $fileName . '\' to cache');
-            } else {
-                $this->writeToOutput('Couldn\'t write file: \'' . $fileName . '\' to cache', true);
-            }
-        }
-    }
-
-    /**
-     * Retrieve all json files from packagist.org if $this->forceRenewWholeCache is true
-     * if false only the json files with a different sha1 hash will be returned.
-     *
-     * @return array containing all or only the changed json files from packagist.org
-     */
-    protected function getFiles()
-    {
-        $files = array();
-        $this->writeToOutput('Try to get content from: \'' . $this->url . '/packages.json' . '\'');
-        $content = $this->getFileContentWithCurl($this->url . '/packages.json');
-
-        if ($content !== false) {
-            $arrMainData = json_decode($content, true);
-            foreach ($arrMainData['includes'] as $fileName => $sha1) {
-                $sha1_remote = $sha1['sha1'];
-                $sha1_cache = $this->driver->getSha1ForFile($fileName);
-
-                if ($sha1_cache !== false) {
-                    $sha1_cache = $sha1_remote;
-                }
-
-                if (!$this->forceRenewWholeCache && $sha1_remote == $sha1_cache) {
-                    $this->writeToOutput(sprintf(
-                        'File: \'%s\' has the same sha1 hash: \'%s\' as on: \'%s\' and doesn\'t need to be fetched.',
-                        $fileName,
-                        $sha1_remote,
-                        $this->url
-                    ));
-                } else {
-                    $files[] = $fileName;
-                }
-            }
-        } else {
-            $message = sprintf(
-                'Couldn\'t retrieve content from: \'%s\'',
-                $this->url . '/packages.json'
-            );
-            $this->writeToOutput($message, true);
-            exit;
-        }
-
-        if (!empty($files)) {
-            $files = array_merge(array('packages.json'), $files);
-        }
-
-        return $files;
-    }
-
-    /**
      * Get file content from the cache storage, this will be delegated to the
      * injected Driver instance.
      * Returns false if the file can not be found in the cache storage.
@@ -187,6 +122,7 @@ class CacheHandler
      */
     public function getFile($fileName)
     {
+        $this->check();
         return $this->driver->getFileContent($fileName);
     }
 
@@ -200,6 +136,7 @@ class CacheHandler
      */
     public function addFile($fileName, $fileContent)
     {
+        $this->check();
         return $this->driver->addFile($fileName, $fileContent);
     }
 
@@ -211,54 +148,50 @@ class CacheHandler
      */
     public function cleanCache()
     {
+        $this->check();
         $this->driver->cleanCache();
     }
 
     /**
-     * Get the file content from the passed url.
-     * If the content can not be retrieved, for example
-     * because of a network problem or something else
-     * this method returns false
+     * Returns the sha256 hash for the data stored by a filename
      *
-     * @param string $url
-     * @return bool|mixed
+     * @param $fileName string The filename to lookup
+     * @return string:bool     returns false if no sha1 hash can be found for
+     *                         the filename
      */
-    protected function getFileContentWithCurl($url)
+    public function getSha256ForFile($fileName)
     {
-        $ch = curl_init();
+        return $this->driver->getSha256ForFile($fileName);
+    }
 
-        // set URL and other appropriate options
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
+    /**
+     * Returns the sha1 hash for the data stored by a filename
+     *
+     * @param $fileName string The filename to lookup
+     * @return string:bool     returns false if no sha1 hash can be found for
+     *                         the filename
+     */
+    public function getSha1ForFile($fileName)
+    {
+        return $this->driver->getSha1ForFile($fileName);
+    }
 
-        // grab URL and pass it to the browser
-        $content = curl_exec($ch);
-        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($http_status != 200) {
-            $message = sprintf(
-                'The url: \'%s\' can not be retrieved.',
-                $url
-            );
-            $this->writeToOutput($message);
-            return false;
-        }
-
-        $this->writeToOutput(sprintf(
-            'Successfully retrieved content from: \'%s\'',
-            $url
-        ));
-
-        return $content;
+    /**
+     * Renew all the files in cache, only the ones who need to
+     * be renewed or all files if forceRenewWholeCache is set to true
+     *
+     * @return void
+     */
+    public function renewCache()
+    {
+        $this->check();
+        $this->packagistHandler->renewCache($this->forceRenewWholeCache);
     }
 
     /**
      * Let the output handler write a writeln
      * if force is true, the text will be written to the output handler
-     * even if the intput handler has the option quiet set to true.
+     * even if the input handler has the option quiet set to true.
      * There will be toggle with the verbosity level to force output.
      * Use force in case of an error and you want to force the error to
      * be written by the output handler.
@@ -269,7 +202,7 @@ class CacheHandler
      * @param string $text
      * @param bool $force
      */
-    protected function writeToOutput($text, $force = false)
+    public function writeToOutput($text, $force = false)
     {
         if (isset($this->output)) {
             if ($force) {
@@ -283,6 +216,24 @@ class CacheHandler
                 $this->output->setVerbosity($oldVerbose);
             }
         }
+    }
+
+    /**
+     * Return true if this cache handler can work, only when a packagistHandler
+     * is injected.
+     *
+     * @return bool
+     * @throws \RuntimeException
+     */
+    protected function check()
+    {
+        if (!isset($this->packagistHandler)) {
+            throw new \RuntimeException(
+                'No packagist handler set, so this cache handler can not work'
+            );
+        }
+
+        return true;
     }
 
 }

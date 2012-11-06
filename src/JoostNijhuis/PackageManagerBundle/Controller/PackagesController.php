@@ -22,7 +22,8 @@ class PackagesController extends Controller
 {
     
     /**
-     * @Route("/{directory}/{file}.json")
+     * @Route("/{directory1}/{directory2}/{file}.json")
+     * @Route("/{directory1}/{file}.json")
      * @Route("/{file}.json")
      * 
      * Packages index action, this action is responsible for returning
@@ -34,11 +35,18 @@ class PackagesController extends Controller
      * @return Symfony\Component\HttpFoundation\Response
      * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function indexAction(Request $request, $file = '', $directory = null)
+    public function indexAction(
+        Request $request,
+        $file = '',
+        $directory1 = null,
+        $directory2 = null)
     {
         $file .= '.json';
-        if (!empty($directory)) {
-            $file = $directory . '/'  . $file;
+        if (!empty($directory2)) {
+            $file = $directory2 . '/'  . $file;
+        }
+        if (!empty($directory1)) {
+            $file = $directory1 . '/'  . $file;
         }
 
         /* @var \JoostNijhuis\PackageManagerBundle\Packagist\PackagistHandler $objPackagistHandler */

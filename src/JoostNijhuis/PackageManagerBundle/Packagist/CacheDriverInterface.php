@@ -51,6 +51,15 @@ interface CacheDriverInterface
     public function getSha1ForFile($fileName);
 
     /**
+     * Returns the sha256 hash for the data stored by a filename
+     *
+     * @param $fileName string The filename to lookup
+     * @return string:bool     returns false if no sha1 hash can be found for
+     *                         the filename
+     */
+    public function getSha256ForFile($fileName);
+
+    /**
      * Clear the whole cache.
      *
      * @return void

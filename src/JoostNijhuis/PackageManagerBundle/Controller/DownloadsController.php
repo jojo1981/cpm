@@ -29,9 +29,10 @@ class DownloadsController extends Controller
         $response = false;
         $version = pathinfo($file, PATHINFO_FILENAME);
 
+        /* @var \JoostNijhuis\PackageManagerBundle\Packagist\PackagistHandler $objPackagistHandler */
         $objPackagistHandler = $this->get('joost_nijhuis_package_manager_packagist_handler');
         $objPackage = $objPackagistHandler->getPackage($vendor, $package, $version);
-        
+
         if ($objPackage !== false) {
             $downloadHandler = $this->get('joost_nijhuis_package_manager_download_handler');
             $response = $downloadHandler->getDownloadResponse($objPackage);

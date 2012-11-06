@@ -118,6 +118,25 @@ class CacheDriverFile extends CacheDriverAbstract
         return $retVal;
     }
 
+    public function getSha256ForFile($fileName)
+    {
+        $retVal = false;
+        $fileName = $this->cacheDir . DIRECTORY_SEPARATOR . $fileName;
+        if (is_file($fileName)) {
+            $retVal = hash('sha256', file_get_contents($fileName));
+        }
+
+        if ($retVal === false) {
+            $message = sprintf(
+                'Couldn\'t read sha256 hash for file: \'%s\' from the filesystem',
+                $fileName
+            );
+            $this->writeToOutput($message);
+        }
+
+        return $retVal;
+    }
+
     public function cleanCache()
     {
         $files = Finder::create()

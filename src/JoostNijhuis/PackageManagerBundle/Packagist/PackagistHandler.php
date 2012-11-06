@@ -78,7 +78,7 @@ class PackagistHandler
      */
     public function setEnableCache($enableCache)
     {
-        $this->enableCache = $enableCache;
+        $this->enableCache = (bool) $enableCache;
     }
 
     /**
@@ -124,8 +124,8 @@ class PackagistHandler
             return false;
         }
 
-        $arrPackage  = $arrPackages[$vendor . '/' . $package][$version];
-        $objPackage  = PackageFactory::getPackageObjectFromArray($arrPackage);
+        $arrPackage = $arrPackages[$vendor . '/' . $package][$version];
+        $objPackage = PackageFactory::getPackageObjectFromArray($arrPackage);
         if ($this->parseOnlyStable && $objPackage->isDev()) {
             return false;
         }
@@ -144,12 +144,25 @@ class PackagistHandler
     {
         $arrMainData = json_decode($this->getFileContent('packages.json', false), true);
         $arrPackages = array();
+
         foreach ($arrMainData['includes'] as $fileName => $sha1) {
-            $arrData = json_decode($this->getFileContent($fileName, false), true);
-            $arrPackages = array_merge_recursive($arrData['packages'], $arrPackages);
+            $arrIncludesData = json_decode($this->getFileContent($fileName, false), true);
+            /* Add include packages to the stack an overwrite existing ones */
+            $arrPackages = $this->addPackagesToStack($arrIncludesData['packages'], $arrPackages);
         }
-        $arrPackages = array_merge($arrPackages, $arrMainData['packages']);
-        
+
+        foreach($arrMainData['providers-includes'] as $fileName => $sha1) {
+            $arrData = json_decode($this->getFileContent($fileName, false), true);
+            foreach($arrData['providers'] as $providerFileName => $providerSha1) {
+                $arrProviderData = json_decode($this->getFileContent($providerFileName, false), true);
+                /* Add provider packages to the stack an overwrite existing ones */
+                $arrPackages = $this->addPackagesToStack($arrProviderData['packages'], $arrPackages);
+            }
+        }
+
+        /* Add private configured packages to the stack an overwrite existing ones */
+        $arrPackages = $this->addPackagesToStack($arrMainData['packages'], $arrPackages);
+
         return $arrPackages;
     }
 
@@ -176,14 +189,57 @@ class PackagistHandler
             }
         }
 
-        if ((!empty($content) || $content !== false)
-            && $fileName == 'packages.json'
-            && $this->privatePackagesHandler instanceof PrivatePackagesHandler) {
-            $content = $this->attachPrivatePackageData($content);
+        if ($fileName == 'packages.json' && !empty($content) && $content !== false) {
+            $data = json_decode($content, true);
+            foreach($data['includes'] as $includeFileName => $sha) {
+                $keys = array_keys($sha);
+                $shaMethod = $keys[0];
+                $content = $this->getFileContent($includeFileName, true);
+                if ($shaMethod == 'sha1') {
+                    $shaKey = sha1($content);
+                } else {
+                    $shaKey = hash('sha256', $content);
+                }
+                $data['includes'][$includeFileName][$shaMethod] = $shaKey;
+            }
+
+            foreach($data['providers-includes'] as $providerFileName => $sha) {
+                $keys = array_keys($sha);
+                $shaMethod = $keys[0];
+                $content = $this->getFileContent($providerFileName, true);
+                if ($shaMethod == 'sha1') {
+                    $shaKey = sha1($content);
+                } else {
+                    $shaKey = hash('sha256', $content);
+                }
+                $data['providers-includes'][$providerFileName][$shaMethod] = $shaKey;
+            }
+
+            $content = json_encode($data);
         }
 
-        if ($content !== false && !empty($content) && $parse === true) {
-            $content = $this->parseContent($content);
+        if (strpos($fileName, 'p/providers-') !== false && !empty($content) && $content !== false) {
+            $data = json_decode($content, true);
+            foreach($data['providers'] as $providerFileName => $sha) {
+                $keys = array_keys($sha);
+                $shaMethod = $keys[0];
+                $content = $this->getFileContent($providerFileName, true);
+                if ($shaMethod == 'sha1') {
+                    $shaKey = sha1($content);
+                } else {
+                    $shaKey = hash('sha256', $content);
+                }
+                $data['providers'][$providerFileName][$shaMethod] = $shaKey;
+            }
+            $content = json_encode($data);
+        }
+
+        if ($fileName == 'packages.json') {
+            $content = $this->attachPrivatePackageData($content);
+            $data = json_decode($content, true);
+            /* if set, private packages will be ignored */
+            unset($data['providers-includes']);
+            $content = json_encode($data);
         }
 
         return $content;
@@ -212,6 +268,124 @@ class PackagistHandler
         return new Response($content, 200, $headers);
     }
 
+    public function renewCache($forceRenewWholeCache = false)
+    {
+        if (!$this->cacheHandler instanceof CacheHandler || $this->enableCache === false) {
+            return false;
+        }
+        $content = $this->getFileContentWithCurl($this->url . '/packages.json');
+        $this->cacheHandler->addFile('packages.json', $content);
+        if (empty($content) || $content === false) {
+            return array();
+        }
+        $arrMainData = json_decode($content, true);
+
+        $shaToMethod = array(
+            'sha1'   => 'getSha1ForFile',
+            'sha256' => 'getSha256ForFile'
+        );
+
+        foreach ($arrMainData['includes'] as $fileName => $sha) {
+            $keys = array_keys($sha);
+            $shaKey = $keys[0];
+
+            $sha_remote = $sha[$shaKey];
+            $method = $shaToMethod[$shaKey];
+
+            $sha_cache = $this->cacheHandler->$method($fileName);
+
+            if ($forceRenewWholeCache || $sha_remote != $sha_cache) {
+                $fileContents = $this->getFileContentWithCurl($this->url . '/'. $fileName);
+                if ($this->cacheHandler->addFile($fileName, $fileContents)) {
+                    $this->cacheHandler->writeToOutput('Written file: \'' . $fileName . '\' to cache');
+                } else {
+                    $this->cacheHandler->writeToOutput('Couldn\'t write file: \'' . $fileName . '\' to cache', true);
+                }
+            } else {
+                $this->cacheHandler->writeToOutput(sprintf(
+                    'File: \'%s\' has the same sha1 hash: \'%s\' as on: \'%s\' and doesn\'t need to be fetched.',
+                    $fileName,
+                    $sha_remote,
+                    $this->url
+                ));
+            }
+        }
+
+        foreach ($arrMainData['providers-includes'] as $providerFileName => $sha) {
+            $keys = array_keys($sha);
+            $shaKey = $keys[0];
+
+            $sha_remote = $sha[$shaKey];
+            $method = $shaToMethod[$shaKey];
+
+            $sha_cache = $this->cacheHandler->$method($providerFileName);
+
+            if ($forceRenewWholeCache || $sha_remote != $sha_cache) {
+                $fileContents = $this->getFileContentWithCurl($this->url . '/'. $providerFileName);
+                if ($this->cacheHandler->addFile($providerFileName, $fileContents)) {
+                    $this->cacheHandler->writeToOutput('Written file: \'' . $providerFileName . '\' to cache');
+                } else {
+                    $this->cacheHandler->writeToOutput('Couldn\'t write file: \'' . $providerFileName . '\' to cache', true);
+                }
+            } else {
+                $fileContents = $this->cacheHandler->getFile($providerFileName);
+                $this->cacheHandler->writeToOutput(sprintf(
+                    'File: \'%s\' has the same sha1 hash: \'%s\' as on: \'%s\' and doesn\'t need to be fetched.',
+                    $providerFileName,
+                    $sha_remote,
+                    $this->url
+                ));
+            }
+            $arrProviderData = json_decode($fileContents, true);
+            foreach($arrProviderData['providers'] as $fileName => $sha) {
+                $keys = array_keys($sha);
+                $shaKey = $keys[0];
+
+                $sha_remote = $sha[$shaKey];
+                $method = $shaToMethod[$shaKey];
+
+                $sha_cache = $this->cacheHandler->$method($fileName);
+
+                if ($forceRenewWholeCache || $sha_remote != $sha_cache) {
+                    $fileContents = $this->getFileContentWithCurl($this->url . '/'. $fileName);
+                    if ($this->cacheHandler->addFile($fileName, $fileContents)) {
+                        $this->cacheHandler->writeToOutput('Written file: \'' . $fileName . '\' to cache');
+                    } else {
+                        $this->cacheHandler->writeToOutput('Couldn\'t write file: \'' . $fileName . '\' to cache', true);
+                    }
+                } else {
+                    $this->cacheHandler->writeToOutput(sprintf(
+                        'File: \'%s\' has the same sha1 hash: \'%s\' as on: \'%s\' and doesn\'t need to be fetched.',
+                        $fileName,
+                        $sha_remote,
+                        $this->url
+                    ));
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Pass array with packages and add them to the passed stack.
+     * If a package exists already in the stack this one will be
+     * replaced, the new stack will be returned
+     *
+     * @param array $packages
+     * @param array $stack
+     * @return array
+     */
+    protected function addPackagesToStack(array $packages, array $stack)
+    {
+        foreach ($packages as $vendorPackageName => $vendorPackagesData) {
+            foreach ($vendorPackagesData as $packageVersion => $packageData) {
+                $stack[$vendorPackageName][$packageVersion] = $packageData;
+            }
+        }
+
+        return $stack;
+    }
+
     /**
      * Attach the private packages retrieved by the injected
      * privatePackagesHandler if injected, if not the original string
@@ -225,7 +399,6 @@ class PackagistHandler
         $arrData = json_decode($content, true);
         $arrPrivatePackages = $this->privatePackagesHandler->getPrivatePackages();
 
-        $data = array('packages');
         foreach($arrPrivatePackages as $packageName => $packageData) {
             foreach ($packageData as $version => $package) {
                 if (isset($package['dist'])) {
@@ -251,7 +424,7 @@ class PackagistHandler
     /**
      * Parse the json content and replaces the package source or
      * dist data. Depending on if $this->parseOnlyStable is true then
-     * only the packages with an other stablitity as dev will be parsed
+     * only the packages with an other stability as dev will be parsed
      * if this setting is false all package will be parsed.
      *
      * @param string $content  JSON string with package data
@@ -259,35 +432,40 @@ class PackagistHandler
      */
     protected function parseContent($content)
     {
+        /* TODO: Make this configurable instead of hard dependency to the Request object */
         $request = Request::createFromGlobals();
         $prefixDownloadUri = $request->getUriForPath('/downloads/');
 
         $arrData = json_decode($content, true);
-        $arrRet = $arrData;
-        foreach($arrData['packages'] as $packageName => $packageData) {
-            foreach($packageData as $version => $data) {
 
-                $doParse = true; 
-                if ($this->parseOnlyStable) {
-                    $stability = VersionParser::parseStability($version);
-                    $doParse = $stability !== 'dev';
-                }
-                
-                if ($doParse) {
-                    $data['dist']['type']      = 'zip';
-                    $data['dist']['reference'] = $data['version'];
-                    $data['dist']['shasum']    = '';
-                    $data['dist']['url']       = $prefixDownloadUri . $packageName . '/' . $version . '.zip';
-                    if (isset($data['source'])) {
-                        unset($data['source']);
+        if (isset($arrData['packages'])) {
+            $arrRet = $arrData;
+            foreach($arrData['packages'] as $packageName => $packageData) {
+                foreach($packageData as $version => $data) {
+
+                    $doParse = true;
+                    if ($this->parseOnlyStable) {
+                        $stability = VersionParser::parseStability($version);
+                        $doParse = $stability !== 'dev';
                     }
-                }
 
-                $arrRet['packages'][$packageName][$version] = $data;
+                    if ($doParse) {
+                        $data['dist']['type']      = 'zip';
+                        $data['dist']['reference'] = $data['version'];
+                        $data['dist']['shasum']    = '';
+                        $data['dist']['url']       = $prefixDownloadUri . $packageName . '/' . $version . '.zip';
+                        if (isset($data['source'])) {
+                            unset($data['source']);
+                        }
+                    }
+
+                    $arrRet['packages'][$packageName][$version] = $data;
+                }
             }
+            return json_encode($arrRet);
         }
 
-        return json_encode($arrRet);
+        return $content;
     }
 
     /**

@@ -44,7 +44,9 @@
 
         <service id="joost_nijhuis_package_manager_cache_handler" class="%joost_nijhuis_package_manager.cache_handler_class%">
             <argument type="service" id="joost_nijhuis_package_manager_cache_driver" />
-            <argument type="string">%joost_nijhuis_package_manager.packagist_url%</argument>
+            <call method="setPackagistHandler">
+                <argument type="service" id="joost_nijhuis_package_manager_packagist_handler" />
+            </call>
         </service>
 
         <service id="joost_nijhuis_package_manager_packagist_handler" class="%joost_nijhuis_package_manager.packagist_handler_class%">
