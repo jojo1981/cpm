@@ -242,6 +242,10 @@ class PackagistHandler
             $content = json_encode($data);
         }
 
+        if ($parse == true) {
+            $content = $this->parseContent($content);
+        }
+
         return $content;
     }
     
