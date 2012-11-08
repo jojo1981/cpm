@@ -145,18 +145,22 @@ class PackagistHandler
         $arrMainData = json_decode($this->getFileContent('packages.json', false), true);
         $arrPackages = array();
 
-        foreach ($arrMainData['includes'] as $fileName => $sha1) {
-            $arrIncludesData = json_decode($this->getFileContent($fileName, false), true);
-            /* Add include packages to the stack an overwrite existing ones */
-            $arrPackages = $this->addPackagesToStack($arrIncludesData['packages'], $arrPackages);
+        if (isset($arrMainData['includes'])) {
+            foreach ($arrMainData['includes'] as $fileName => $sha1) {
+                $arrIncludesData = json_decode($this->getFileContent($fileName, false), true);
+                /* Add include packages to the stack an overwrite existing ones */
+                $arrPackages = $this->addPackagesToStack($arrIncludesData['packages'], $arrPackages);
+            }
         }
 
-        foreach($arrMainData['providers-includes'] as $fileName => $sha1) {
-            $arrData = json_decode($this->getFileContent($fileName, false), true);
-            foreach($arrData['providers'] as $providerFileName => $providerSha1) {
-                $arrProviderData = json_decode($this->getFileContent($providerFileName, false), true);
-                /* Add provider packages to the stack an overwrite existing ones */
-                $arrPackages = $this->addPackagesToStack($arrProviderData['packages'], $arrPackages);
+        if (isset($arrMainData['providers-includes'])) {
+            foreach($arrMainData['providers-includes'] as $fileName => $sha1) {
+                $arrData = json_decode($this->getFileContent($fileName, false), true);
+                foreach($arrData['providers'] as $providerFileName => $providerSha1) {
+                    $arrProviderData = json_decode($this->getFileContent($providerFileName, false), true);
+                    /* Add provider packages to the stack an overwrite existing ones */
+                    $arrPackages = $this->addPackagesToStack($arrProviderData['packages'], $arrPackages);
+                }
             }
         }
 
