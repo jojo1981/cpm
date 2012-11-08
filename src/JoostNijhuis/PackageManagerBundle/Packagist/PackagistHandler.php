@@ -293,59 +293,8 @@ class PackagistHandler
             'sha256' => 'getSha256ForFile'
         );
 
-        foreach ($arrMainData['includes'] as $fileName => $sha) {
-            $keys = array_keys($sha);
-            $shaKey = $keys[0];
-
-            $sha_remote = $sha[$shaKey];
-            $method = $shaToMethod[$shaKey];
-
-            $sha_cache = $this->cacheHandler->$method($fileName);
-
-            if ($forceRenewWholeCache || $sha_remote != $sha_cache) {
-                $fileContents = $this->getFileContentWithCurl($this->url . '/'. $fileName);
-                if ($this->cacheHandler->addFile($fileName, $fileContents)) {
-                    $this->cacheHandler->writeToOutput('Written file: \'' . $fileName . '\' to cache');
-                } else {
-                    $this->cacheHandler->writeToOutput('Couldn\'t write file: \'' . $fileName . '\' to cache', true);
-                }
-            } else {
-                $this->cacheHandler->writeToOutput(sprintf(
-                    'File: \'%s\' has the same sha1 hash: \'%s\' as on: \'%s\' and doesn\'t need to be fetched.',
-                    $fileName,
-                    $sha_remote,
-                    $this->url
-                ));
-            }
-        }
-
-        foreach ($arrMainData['providers-includes'] as $providerFileName => $sha) {
-            $keys = array_keys($sha);
-            $shaKey = $keys[0];
-
-            $sha_remote = $sha[$shaKey];
-            $method = $shaToMethod[$shaKey];
-
-            $sha_cache = $this->cacheHandler->$method($providerFileName);
-
-            if ($forceRenewWholeCache || $sha_remote != $sha_cache) {
-                $fileContents = $this->getFileContentWithCurl($this->url . '/'. $providerFileName);
-                if ($this->cacheHandler->addFile($providerFileName, $fileContents)) {
-                    $this->cacheHandler->writeToOutput('Written file: \'' . $providerFileName . '\' to cache');
-                } else {
-                    $this->cacheHandler->writeToOutput('Couldn\'t write file: \'' . $providerFileName . '\' to cache', true);
-                }
-            } else {
-                $fileContents = $this->cacheHandler->getFile($providerFileName);
-                $this->cacheHandler->writeToOutput(sprintf(
-                    'File: \'%s\' has the same sha1 hash: \'%s\' as on: \'%s\' and doesn\'t need to be fetched.',
-                    $providerFileName,
-                    $sha_remote,
-                    $this->url
-                ));
-            }
-            $arrProviderData = json_decode($fileContents, true);
-            foreach($arrProviderData['providers'] as $fileName => $sha) {
+        if (isset($arrMainData['includes'])) {
+            foreach ($arrMainData['includes'] as $fileName => $sha) {
                 $keys = array_keys($sha);
                 $shaKey = $keys[0];
 
@@ -368,6 +317,61 @@ class PackagistHandler
                         $sha_remote,
                         $this->url
                     ));
+                }
+            }
+        }
+
+        if (isset($arrMainData['providers-includes'])) {
+            foreach ($arrMainData['providers-includes'] as $providerFileName => $sha) {
+                $keys = array_keys($sha);
+                $shaKey = $keys[0];
+
+                $sha_remote = $sha[$shaKey];
+                $method = $shaToMethod[$shaKey];
+
+                $sha_cache = $this->cacheHandler->$method($providerFileName);
+
+                if ($forceRenewWholeCache || $sha_remote != $sha_cache) {
+                    $fileContents = $this->getFileContentWithCurl($this->url . '/'. $providerFileName);
+                    if ($this->cacheHandler->addFile($providerFileName, $fileContents)) {
+                        $this->cacheHandler->writeToOutput('Written file: \'' . $providerFileName . '\' to cache');
+                    } else {
+                        $this->cacheHandler->writeToOutput('Couldn\'t write file: \'' . $providerFileName . '\' to cache', true);
+                    }
+                } else {
+                    $fileContents = $this->cacheHandler->getFile($providerFileName);
+                    $this->cacheHandler->writeToOutput(sprintf(
+                        'File: \'%s\' has the same sha1 hash: \'%s\' as on: \'%s\' and doesn\'t need to be fetched.',
+                        $providerFileName,
+                        $sha_remote,
+                        $this->url
+                    ));
+                }
+                $arrProviderData = json_decode($fileContents, true);
+                foreach($arrProviderData['providers'] as $fileName => $sha) {
+                    $keys = array_keys($sha);
+                    $shaKey = $keys[0];
+
+                    $sha_remote = $sha[$shaKey];
+                    $method = $shaToMethod[$shaKey];
+
+                    $sha_cache = $this->cacheHandler->$method($fileName);
+
+                    if ($forceRenewWholeCache || $sha_remote != $sha_cache) {
+                        $fileContents = $this->getFileContentWithCurl($this->url . '/'. $fileName);
+                        if ($this->cacheHandler->addFile($fileName, $fileContents)) {
+                            $this->cacheHandler->writeToOutput('Written file: \'' . $fileName . '\' to cache');
+                        } else {
+                            $this->cacheHandler->writeToOutput('Couldn\'t write file: \'' . $fileName . '\' to cache', true);
+                        }
+                    } else {
+                        $this->cacheHandler->writeToOutput(sprintf(
+                            'File: \'%s\' has the same sha1 hash: \'%s\' as on: \'%s\' and doesn\'t need to be fetched.',
+                            $fileName,
+                            $sha_remote,
+                            $this->url
+                        ));
+                    }
                 }
             }
         }
