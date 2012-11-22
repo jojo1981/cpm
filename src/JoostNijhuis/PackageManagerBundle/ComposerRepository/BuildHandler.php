@@ -287,18 +287,18 @@ class BuildHandler
                 $package->setSourceUrl($url);
             }
 
-            if ($package->getSourceType() == 'svn') {
-                if ($package->getSourceReference() != '') {
-                    $reference = $this->removeRevisionFromReference($package->getSourceReference());
-                    $package->setSourceReference($reference);
-                }
-            }
-            if ($package->getDistType() == 'svn') {
-                if ($package->getDistReference() != '') {
-                    $reference = $this->removeRevisionFromReference($package->getDistReference());
-                    $package->setDistReference($reference);
-                }
-            }
+//            if ($package->getSourceType() == 'svn') {
+//                if ($package->getSourceReference() != '') {
+//                    $reference = $this->removeRevisionFromReference($package->getSourceReference());
+//                    $package->setSourceReference($reference);
+//                }
+//            }
+//            if ($package->getDistType() == 'svn') {
+//                if ($package->getDistReference() != '') {
+//                    $reference = $this->removeRevisionFromReference($package->getDistReference());
+//                    $package->setDistReference($reference);
+//                }
+//            }
 
             $repo['packages'][$package->getPrettyName()][$package->getPrettyVersion()] = $dumper->dump($package);
         }

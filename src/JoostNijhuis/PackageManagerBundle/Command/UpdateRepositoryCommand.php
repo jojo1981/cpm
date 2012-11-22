@@ -54,6 +54,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var \JoostNijhuis\PackageManagerBundle\ComposerRepository\BuildHandler $builder */
         $builder = $this->getContainer()->get('joost_nijhuis_package_manager_repository_build_handler');
 
         $builder->setOutputInterface($output);
