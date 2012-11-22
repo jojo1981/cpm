@@ -102,8 +102,9 @@ class PrivatePackagesHandler
 
             if (isset($data['authors'])) {
                 foreach ($data['authors'] as $author) {
-                    $key = strtolower(implode('_', array_values($author)));
-                    $arrAuthors[$key] = $author;
+                    $key = str_replace(' ', '_', strtolower(implode('_', array_values($author))));
+                    $a = array('name' => '', 'homepage' => '', 'email' => '', 'role' => '');
+                    $arrAuthors[$key] = array_merge($a, $author);
                 }
             }
 
@@ -126,14 +127,14 @@ class PrivatePackagesHandler
 
             if ($urlData['type'] == 'svn') {
 
-                $pos = strpos($urlData['reference'], '@');
-                if ($pos !== false) {
-                    $reference = substr($urlData['reference'], 0, $pos - 1);
-                } else {
-                    $reference = $urlData['reference'];
-                }
+//                $pos = strpos($urlData['reference'], '@');
+//                if ($pos !== false) {
+//                    $reference = substr($urlData['reference'], 0, $pos - 1);
+//                } else {
+//                    $reference = $urlData['reference'];
+//                }
 
-                $url = $urlData['url'] . $reference;
+                $url = $urlData['url'] . $urlData['reference'];
             } else {
                 $url = $urlData['url'];
             }
@@ -144,9 +145,11 @@ class PrivatePackagesHandler
         }
 
         $arrRet['releases'] = $arrReleases;
+
         foreach ($arrAuthors as $author) {
             $arrRet['authors'][] = $author;
         }
+
         foreach ($arrLicenses as $license) {
             $arrRet['licenses'][] = $license;
         }
