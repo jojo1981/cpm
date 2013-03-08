@@ -31,7 +31,7 @@ use Symfony\Component\Console\Helper\HelperSet;
 use JoostNijhuis\PackageManagerBundle\Packages\SvnAuthentication;
 
 /**
- * This is the BuildHander to build the private packages part
+ * This is the BuildHandler to build the private packages part
  * of the repository. It will build a json output file with all
  * populated packages with there versions and composer information.
  */
@@ -49,27 +49,27 @@ class BuildHandler
     protected $outputFile;
 
     /**
-     * @var \Symfony\Component\Console\Command\Command $command
+     * @var Command $command
      */
     protected $command;
 
     /**
-     * @var \Symfony\Component\Console\Output\OutputInterface $output
+     * @var OutputInterface $output
      */
     protected $output;
 
     /**
-     * @var \Symfony\Component\Console\Input\InputInterface $input
+     * @var InputInterface $input
      */
     protected $input;
 
     /**
-     * @var \Symfony\Component\Console\Helper\HelperSet $helperSet
+     * @var HelperSet $helperSet
      */
     protected $helperSet;
 
     /**
-     * @var \JoostNijhuis\PackageManagerBundle\Packages\SvnAuthentication
+     * @var SvnAuthentication
      */
     protected $svnAuthentication;
 
@@ -78,6 +78,7 @@ class BuildHandler
      *
      * @param string $inputFile  The file to read the configuration from
      * @param string $outputFile The file to write all populated data to
+     * @throws FileNotFoundException
      */
     public function __construct($inputFile, $outputFile)
     {
