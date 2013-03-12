@@ -52,16 +52,29 @@ class PackagesController extends Controller
         $file .= '.json';
         switch (true){
             case (!empty($directory3)):
-                $file = $directory3 . '/'  . $file;
+                $file = $directory3 . DIRECTORY_SEPARATOR  . $file;
             case (!empty($directory2)):
-                $file = $directory2 . '/'  . $file;
+                $file = $directory2 . DIRECTORY_SEPARATOR  . $file;
             case (!empty($directory1)):
-                $file = $directory1 . '/'  . $file;
+                $file = $directory1 . DIRECTORY_SEPARATOR  . $file;
+        }
+
+        $rootDir = $this->container->getParameter('kernel.root_dir');
+        $cacheDir = realpath($rootDir . '/cache/composer') . DIRECTORY_SEPARATOR;
+        $file = realpath($cacheDir . $file);
+
+        $response = false;
+        if (file_exists($file)) {
+            $content = file_get_contents($file);
+            $headers = array(
+                'Content-type' => 'application/json'
+            );
+            $response = new Response($content, 200, $headers);
         }
 
         /* @var PackagistHandler $objPackagistHandler */
-        $objPackagistHandler = $this->get('joost_nijhuis_package_manager_packagist_handler');
-        $response = $objPackagistHandler->getResponse($file);
+//        $objPackagistHandler = $this->get('joost_nijhuis_package_manager_packagist_handler');
+//        $response = $objPackagistHandler->getResponse($file);
         if ($response === false) {
             throw $this->createNotFoundException($request->getRequestUri() . ' Not found');
         }

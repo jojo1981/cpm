@@ -6,7 +6,6 @@
 
     <parameters>
         <parameter key="joost_nijhuis_package_manager.locale_listener_class">JoostNijhuis\PackageManagerBundle\EventListener\LocaleListener</parameter>
-        <parameter key="joost_nijhuis_package_manager.reguest_listener_class">JoostNijhuis\PackageManagerBundle\EventListener\RequestListener</parameter>
         <parameter key="joost_nijhuis_package_manager.language_switcher_class">JoostNijhuis\PackageManagerBundle\Twig\LanguageSwitcher</parameter>
         <parameter key="joost_nijhuis_package_manager.twig_extention_class">JoostNijhuis\PackageManagerBundle\Twig\Extension\PackageManagerTwigExtension</parameter>
         <parameter key="joost_nijhuis_package_manager.path_helper_class">JoostNijhuis\PackageManagerBundle\Services\PathHelper</parameter>
@@ -25,11 +24,6 @@
         <service id="joost_nijhuis_package_manager_locale_listener" class="%joost_nijhuis_package_manager.locale_listener_class%">
             <argument type="service" id="service_container" />
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" priority="-255" />
-        </service>
-
-        <service id="joost_nijhuis_package_manager_request_listener" class="%joost_nijhuis_package_manager.reguest_listener_class%">
-            <argument type="service" id="service_container" />
-            <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" priority="1" />
         </service>
 
         <service id="joost_nijhuis_package_manager.language_switcher" class="%joost_nijhuis_package_manager.language_switcher_class%">
