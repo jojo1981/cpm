@@ -17,7 +17,9 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
 /**
- * The Extention class which is responsible for setting up
+ * JoostNijhuis\PackageManagerBundle\DependencyInjection\JoostNijhuisPackageManagerExtension
+ *
+ * The Extension class which is responsible for setting up
  * the bundle configurations and register all services inside this
  * bundle into the Dependency Injection Container
  */
@@ -25,33 +27,23 @@ class JoostNijhuisPackageManagerExtension extends Extension
 {
 
     /**
-     * Will be triggered when the Symfony2 kernel initializes this bundle
-     *
-     * @param array $configs the array with all configuration read from the config.yml file
-     *                       for this bunlde
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * {@inheritDoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {       
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('joost_nijhuis_package_manager.app_name', $config['app_name']);
-        $container->setParameter('joost_nijhuis_package_manager.company_name', $config['company_name']);
-        if (isset($config['company_url'])) {
-            $container->setParameter('joost_nijhuis_package_manager.company_url', $config['company_url']);
+        foreach ($config as $key => $value) {
+            $container->setParameter($this->getAlias() . '.' . $key, $value);
         }
-        $container->setParameter('joost_nijhuis_package_manager.parse_only_stable', $config['parse_only_stable']);
-        $container->setParameter('joost_nijhuis_package_manager.enable_cache', $config['enable_cache']);
-        $container->setParameter('joost_nijhuis_package_manager.packagist_url', $config['packagist_url']);
-        $container->setParameter('joost_nijhuis_package_manager.private_packages_config_file', $config['private_packages_config_file']);
-        $container->setParameter('joost_nijhuis_package_manager.private_packages_output_file', $config['private_packages_output_file']);
-        $container->setParameter('joost_nijhuis_package_manager.private_packages_data_dir', $config['private_packages_data_dir']);
-        $container->setParameter('joost_nijhuis_package_manager.packagist_cache_dir', $config['packagist_cache_dir']);
-        $container->setParameter('joost_nijhuis_package_manager.tmp_dir', $config['tmp_dir']);
-        $container->setParameter('joost_nijhuis_package_manager.params', $config);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $container->setParameter($this->getAlias() . '.params', $config);
+
+        $loader = new Loader\XmlFileLoader(
+            $container,
+            new FileLocator(__DIR__.'/../Resources/config')
+        );
         $loader->load('services.xml');
     }
 

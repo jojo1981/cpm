@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -7,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace JoostNijhuis\PackageManagerBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,8 +16,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use JoostNijhuis\PackageManagerBundle\Packagist\PackagistHandler;
-use JoostNijhuis\PackageManagerBundle\Packages\PrivatePackagesHandler;
+use JoostNijhuis\PackageManagerBundle\Builder\Config\Config;
+use JoostNijhuis\PackageManagerBundle\Builder\File\PackageContainer;
 
 /**
  * JoostNijhuis\PackageManagerBundle\Controller\PackagesController
@@ -26,7 +28,6 @@ class PackagesController extends Controller
 {
 
     /**
-     * @Route("/{directory1}/{directory2}/{directory3}/{file}.json")
      * @Route("/{directory1}/{directory2}/{file}.json")
      * @Route("/{directory1}/{file}.json")
      * @Route("/{file}.json")
@@ -38,7 +39,6 @@ class PackagesController extends Controller
      * @param string $file
      * @param null|string $directory1
      * @param null|string $directory2
-     * @param null|string $directory3
      * @throws NotFoundHttpException
      * @return Response
      */
@@ -46,35 +46,43 @@ class PackagesController extends Controller
         Request $request,
         $file = '',
         $directory1 = null,
-        $directory2 = null,
-        $directory3 = null
+        $directory2 = null
     ) {
+        $content = null;
         $file .= '.json';
         switch (true){
-            case (!empty($directory3)):
-                $file = $directory3 . DIRECTORY_SEPARATOR  . $file;
             case (!empty($directory2)):
                 $file = $directory2 . DIRECTORY_SEPARATOR  . $file;
             case (!empty($directory1)):
                 $file = $directory1 . DIRECTORY_SEPARATOR  . $file;
         }
 
-        $rootDir = $this->container->getParameter('kernel.root_dir');
-        $cacheDir = realpath($rootDir . '/cache/composer') . DIRECTORY_SEPARATOR;
-        $file = realpath($cacheDir . $file);
+        /** @var Config $config */
+        $config = $this->get('joost_nijhuis_package_manager.config');
+        if ($config->getEnablePackagistProxy() == false) {
+            if ($file == 'packages.json') {
+                $fileName = $config->getPrivatePackagesFile();
+                $PackageContainer = new PackageContainer($fileName, dirname($fileName), 'sha265');
+                $PackageContainer->setConfig($config);
+                $PackageContainer->parse(false);
+                $data = $PackageContainer->getData();
+                $content = json_encode($data);
+            }
+        } else {
+            $indexDir = $config->getIndexPath();
+            $indexDir = realpath($indexDir) . DIRECTORY_SEPARATOR;
+            $fileName = $indexDir . $file;
+            $content = file_get_contents($fileName);
+        }
 
         $response = false;
-        if (file_exists($file)) {
-            $content = file_get_contents($file);
+        if ($content) {
             $headers = array(
                 'Content-type' => 'application/json'
             );
             $response = new Response($content, 200, $headers);
         }
 
-        /* @var PackagistHandler $objPackagistHandler */
-//        $objPackagistHandler = $this->get('joost_nijhuis_package_manager_packagist_handler');
-//        $response = $objPackagistHandler->getResponse($file);
         if ($response === false) {
             throw $this->createNotFoundException($request->getRequestUri() . ' Not found');
         }

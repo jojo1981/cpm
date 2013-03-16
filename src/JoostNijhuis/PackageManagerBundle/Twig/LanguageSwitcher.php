@@ -12,13 +12,18 @@
 namespace JoostNijhuis\PackageManagerBundle\Twig;
 
 use Symfony\Component\DependencyInjection\ContainerAware;
+use Doctrine\Bundle\DoctrineBundle\Registry;
+use Symfony\Bundle\FrameworkBundle\Translation\Translator;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\FormBuilder;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\Twig\LanguageSwitcher
+ *
  * LanguageSwitcher class to show a language selection form
  * Also available a service which can be retrieved from the
  * dependency injection container
- *
- * @author Joost Nijhuis <jnijhuis81@gmail.com>
  */
 class LanguageSwitcher extends ContainerAware
 {
@@ -86,7 +91,11 @@ class LanguageSwitcher extends ContainerAware
      */
     public function render($view, array $parameters = array(), Response $response = null)
     {
-        return $this->container->get('templating')->renderResponse($view, $parameters, $response);
+        return $this->container->get('templating')->renderResponse(
+            $view,
+            $parameters,
+            $response
+        );
     }
     
     /**
@@ -97,9 +106,15 @@ class LanguageSwitcher extends ContainerAware
      *
      * @return FormBuilder
      */
-    protected function createFormBuilder($data = null, array $options = array())
-    {
-        return $this->container->get('form.factory')->createBuilder('form', $data, $options);
+    protected function createFormBuilder(
+        $data = null,
+        array $options = array()
+    ) {
+        return $this->container->get('form.factory')->createBuilder(
+            'form',
+            $data,
+            $options
+        );
     }
     
     /**
@@ -116,15 +131,16 @@ class LanguageSwitcher extends ContainerAware
      * Shortcut to return the Doctrine Registry service.
      *
      * @return Registry
-     *
      * @throws \LogicException If DoctrineBundle is not available
      */
     protected function getDoctrine()
     {
         if (!$this->container->has('doctrine')) {
-            throw new \LogicException('The DoctrineBundle is not registered in your application.');
+            throw new \LogicException(
+                'The DoctrineBundle is not registered in your application.'
+            );
         }
-    
+
         return $this->container->get('doctrine');
     }
     

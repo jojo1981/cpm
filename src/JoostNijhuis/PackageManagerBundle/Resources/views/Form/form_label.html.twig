@@ -11,17 +11,17 @@
 {% block field_label %}
 {% spaceless %}
 {% if required %}
-	{% if attr.class is not defined %}
-		{% set class = " class=\"required\"" %}
-	{% else %}
-		{% set class = " class=\""~ attr.class ~"\"" %}
-	{% endif %}
+    {% if attr.class is not defined %}
+        {% set class = " class=\"required\"" %}
+    {% else %}
+        {% set class = " class=\""~ attr.class ~"\"" %}
+    {% endif %}
 {% else %}
-	{% if attr.class is not defined %}
-		{% set class = "" %}
-	{% else %}
-		{% set class = " class=\""~ attr.class ~"\"" %}
-	{% endif %}
+    {% if attr.class is not defined %}
+        {% set class = "" %}
+    {% else %}
+        {% set class = " class=\""~ attr.class ~"\"" %}
+    {% endif %}
 {% endif %}
 <label for="{{ id }}"{{ class|raw }}>{{ label|trans|raw }}</label>
 {% endspaceless %}

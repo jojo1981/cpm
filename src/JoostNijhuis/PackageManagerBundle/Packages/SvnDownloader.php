@@ -15,6 +15,8 @@ use Composer\Downloader\SvnDownloader as BaseSvnDownloader;
 use Composer\Package\PackageInterface;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\Packages\SvnDownloader
+ *
  * This class is a wrapper around the Composer SvnDownloader
  * and add the possibility to use credentials
  */

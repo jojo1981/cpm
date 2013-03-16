@@ -12,6 +12,8 @@
 namespace JoostNijhuis\PackageManagerBundle\Packages;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\Packages\PrivatePackagesHandler
+ *
  * This class is responsible for get data from the
  * generated output file which contains all the private packages
  * and/or the packages which are added manual because they are not
@@ -99,11 +101,17 @@ class PrivatePackagesHandler
         $arrLicenses = array();
         $arrReleases = array();
         foreach ($packageData as $version => $data) {
-
             if (isset($data['authors'])) {
                 foreach ($data['authors'] as $author) {
-                    $key = str_replace(' ', '_', strtolower(implode('_', array_values($author))));
-                    $a = array('name' => '', 'homepage' => '', 'email' => '', 'role' => '');
+                    $key = str_replace(' ', '_', strtolower(
+                        implode('_', array_values($author)))
+                    );
+                    $a = array(
+                        'name'     => '',
+                        'homepage' => '',
+                        'email'    => '',
+                        'role'     => ''
+                    );
                     $arrAuthors[$key] = array_merge($a, $author);
                 }
             }
@@ -126,14 +134,6 @@ class PrivatePackagesHandler
             }
 
             if ($urlData['type'] == 'svn') {
-
-//                $pos = strpos($urlData['reference'], '@');
-//                if ($pos !== false) {
-//                    $reference = substr($urlData['reference'], 0, $pos - 1);
-//                } else {
-//                    $reference = $urlData['reference'];
-//                }
-
                 $url = $urlData['url'] . $urlData['reference'];
             } else {
                 $url = $urlData['url'];

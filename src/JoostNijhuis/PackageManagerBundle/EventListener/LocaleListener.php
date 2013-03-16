@@ -11,7 +11,6 @@
 
 namespace JoostNijhuis\PackageManagerBundle\EventListener;
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -20,9 +19,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\EventListener\LocaleListener
+ *
  * This class will be used to set the right locale
  * form route params first, if not exists then try to retrieve
- * it from the session if not exists try to use the preffered
+ * it from the session if not exists try to use the preferred
  * language from the browser if no match can be made then use
  * the default locale.
  *
@@ -43,7 +44,7 @@ class LocaleListener
      * @var array will hold all available locales read from the database
      */
     protected $availableLocales;
-    
+
     /**
      * Constructor
      *
@@ -52,7 +53,6 @@ class LocaleListener
      * Request object
      *
      * @param ContainerInterface $container
-     * @param array $availableLocales
      */
     public function __construct(ContainerInterface $container)
     {
@@ -62,7 +62,7 @@ class LocaleListener
     /**
      * Will be triggered by the Symfony2 kernel using the Event Dispatcher
      *
-     * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $e
+     * @param GetResponseEvent $e
      */
     public function onKernelRequest(GetResponseEvent $e)
     {
@@ -110,8 +110,8 @@ class LocaleListener
      * Try to retrieve the locale, return false if no locale
      * can be determined.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param \Symfony\Component\HttpFoundation\Session\Session $session
+     * @param Request $request
+     * @param Session $session
      * @return string
      */
     protected function getLocale(Request $request, Session $session)
@@ -137,9 +137,9 @@ class LocaleListener
      * it's not a valid locale then throw the exception.
      * return false if no locale is found in the request params.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      * @return bool|string
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     * @throws NotFoundHttpException
      */
     protected function getLocaleFromRequestParams(Request $request)
     {
@@ -164,7 +164,7 @@ class LocaleListener
      * Try to retrieve the locale from the session, returns false
      * if the locale can not be found in the session
      *
-     * @param \Symfony\Component\HttpFoundation\Session\Session $session
+     * @param Session $session
      * @return bool|string
      */
     protected function getLocaleFromSession(Session $session)
@@ -184,7 +184,7 @@ class LocaleListener
      * file will be returned. If no default locale is configured in the
      * config.yml file the string 'en' will be returned
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      * @return string
      */
     protected function getPreferredOrDefaultLanguage(Request $request)

@@ -1,13 +1,22 @@
 <?php
 
-namespace JoostNijhuis\PackageManagerBundle\Builder;
+/**
+ * This file is part of the Composer Package Manager.
+ *
+ * (c) Joost Nijhuis <jnijhuis81@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JoostNijhuis\PackageManagerBundle\Builder\File;
 
 use Symfony\Component\Filesystem\Filesystem;
 use JoostNijhuis\PackageManagerBundle\Builder\Downloader\DownloaderInterface;
 
 
 /**
- * JoostNijhuis\PackageManagerBundle\Builder\PackagesJson
+ * JoostNijhuis\PackageManagerBundle\Builder\File\PackagesJson
  *
  * This object has a direct link with the packages.json file. The main file
  * of a Composer Repository.
@@ -15,13 +24,16 @@ use JoostNijhuis\PackageManagerBundle\Builder\Downloader\DownloaderInterface;
 class PackagesJson extends JsonFile
 {
 
+    /**
+     * @var int
+     */
     protected $start;
 
     /**
      * Constructor
      *
      * @param string $fileName
-     * @param Downloader\DownloaderInterface $downloader [optional]
+     * @param DownloaderInterface $downloader [optional]
      */
     public function __construct($fileName, DownloaderInterface $downloader = null)
     {
@@ -29,15 +41,50 @@ class PackagesJson extends JsonFile
         $this->setData($fileName);
 
         $this->providersUrl = $this->data['providers-url'];
-        $this->config = new ParseConfig();
+    }
+
+    public function attachPrivatePackages()
+    {
+        $this->parseMainData();
+
+        $providers = $this->data['provider-includes'];
+        $this->data['provider-includes'] = array(
+            'p/provider-active$%hash%.json' => $providers['p/provider-active$%hash%.json']
+        );
+        $this->getProviderIncludes();
+        $this->data['provider-includes'] = array_merge($providers, $this->data['provider-includes']);
+
+        $providers = $this->data['providers-includes'];
+        $this->data['providers-includes'] = array(
+            'p/providers-active.json' => $providers['p/providers-active.json']
+        );
+        $this->getProvidersIncludes();
+        $this->data['providers-includes'] = array_merge($providers, $this->data['providers-includes']);
+
+        $this->writeFileToDisc();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function parse()
+    public function parse($writeToDisk = true)
     {
         $this->start = microtime(true);
+
+        $this->parseMainData();
+        $this->parsePackages();
+        $this->getProviderIncludes();
+        $this->getProvidersIncludes();
+        $this->getIncludes();
+        $this->writeFileToDisc();
+
+        $timeTaken = microtime(true) - $this->start;
+        $timeTakenMinutes = $timeTaken / 60;
+        $this->output->writeln('Take about: ' . $timeTakenMinutes . ' minutes.');
+    }
+
+    protected function parseMainData()
+    {
         unset($this->data['notify_batch']);
         unset($this->data['search']);
 
@@ -54,17 +101,11 @@ class PackagesJson extends JsonFile
         } else {
             $this->data['notify-batch'] = $notifyBatch;
         }
-
-        $this->parsePackages();
-        $this->getProviderIncludes();
-        $this->getProvidersIncludes();
-        $this->getIncludes();
-        $this->writeFileToDisc();
-        $timeTaken = microtime(true) - $this->start;
-        $timeTakenMinutes = $timeTaken / 60;
-        $this->output->writeln('Take about: ' . $timeTakenMinutes . ' minutes.');
     }
 
+    /**
+     * Parse providers includes
+     */
     protected function getProvidersIncludes()
     {
         foreach ($this->data['providers-includes'] as $fileName => $data) {
@@ -77,12 +118,11 @@ class PackagesJson extends JsonFile
                 $this->basePath,
                 $shaMethod,
                 '',
-                '',
+                $fileName,
                 $this->downloader
             );
             $providerContainer->setConfig($this->config);
             $providerContainer->setOutputInterface($this->output);
-            $providerContainer->setInputInterface($this->input);
             $providerContainer->parse();
 
             if ($providerContainer->getHash() != $hash) {
@@ -93,6 +133,9 @@ class PackagesJson extends JsonFile
         }
     }
 
+    /**
+     * Parse provider includes
+     */
     protected function getProviderIncludes()
     {
         foreach ($this->data['provider-includes'] as $fileName => $data) {
@@ -112,7 +155,6 @@ class PackagesJson extends JsonFile
             );
             $providerContainer->setConfig($this->config);
             $providerContainer->setOutputInterface($this->output);
-            $providerContainer->setInputInterface($this->input);
             $providerContainer->parse();
 
             if ($providerContainer->getHash() != $hash) {
@@ -123,6 +165,9 @@ class PackagesJson extends JsonFile
         }
     }
 
+    /**
+     * Parse includes
+     */
     protected function getIncludes()
     {
         foreach ($this->data['includes'] as $fileName => $data) {
@@ -140,7 +185,6 @@ class PackagesJson extends JsonFile
             );
             $packageContainer->setConfig($this->config);
             $packageContainer->setOutputInterface($this->output);
-            $packageContainer->setInputInterface($this->input);
             $packageContainer->parse();
 
             if ($packageContainer->getHash() != $hash) {
@@ -151,6 +195,9 @@ class PackagesJson extends JsonFile
         }
     }
 
+    /**
+     * Write file to disc
+     */
     protected function writeFileToDisc()
     {
         $fs = new Filesystem();

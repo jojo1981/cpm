@@ -14,6 +14,8 @@ namespace JoostNijhuis\PackageManagerBundle\Twig\Extension;
 use JoostNijhuis\PackageManagerBundle\Twig\LanguageSwitcher;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\Twig\Extension\PackageManagerTwigExtension
+ *
  * A Twig Extension class which provide some extra functionality
  * to the twig template which will be used inside this bundle
  */
@@ -21,7 +23,7 @@ class PackageManagerTwigExtension extends \Twig_Extension_Core
 {
 
     /**
-     * @var \JoostNijhuis\PackageManagerBundle\Twig\LanguageSwitcher
+     * @var LanguageSwitcher
      */
     protected $languageSwitcher;
 
@@ -33,8 +35,8 @@ class PackageManagerTwigExtension extends \Twig_Extension_Core
     /**
      * Constructor
      *
-     * @param \JoostNijhuis\PackageManagerBundle\Twig\LanguageSwitcher $languageSwitcher
-     * @param array $config The bundle configuration settings read from the config.yml file
+     * @param LanguageSwitcher $languageSwitcher
+     * @param array $config
      */
     public function __construct(
         LanguageSwitcher $languageSwitcher,
@@ -145,6 +147,7 @@ class PackageManagerTwigExtension extends \Twig_Extension_Core
 
     /**
      * Returns the name of the class of an object
+     *
      * @link http://php.net/manual/en/function.get-class.php
      * @param object $object
      * @return string the name of the class of which object is an

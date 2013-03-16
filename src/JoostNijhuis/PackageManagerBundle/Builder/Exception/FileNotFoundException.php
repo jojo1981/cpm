@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace JoostNijhuis\PackageManagerBundle\ComposerRepository\Exceptions;
+namespace JoostNijhuis\PackageManagerBundle\Builder\Exception;
 
 /**
- * Exception class which can be thrown in case the
- * \JoostNijhuis\PackageManagerBundle\ComposerRepository\BuildHander
- * can't find a file on which he depends on.
+ * JoostNijhuis\PackageManagerBundle\Builder\Exception\FileNotFoundException
+ *
+ * Exception class which can be thrown in case a required file can not be found
  */
 class FileNotFoundException extends \Exception
 {

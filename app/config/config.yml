@@ -60,14 +60,15 @@ swiftmailer:
     spool:     { type: memory }
 
 joost_nijhuis_package_manager:
-    app_name: %app_name%
-    company_name: %company_name%
-    company_url: %company_url%
-    parse_only_stable: %parse_only_stable%
-    enable_cache: %enable_cache%
-    packagist_url: %packagist_url%
+    app_name:                     %app_name%
+    company_name:                 %company_name%
+    company_url:                  %company_url%
+    enable_packagist_proxy:       %enable_packagist_proxy%
+    parse_packages:               %parse_packages%
+    attach_private_packages:      %attach_private_packages%
+    packagist_url:                %packagist_url%
     private_packages_config_file: %private_packages_config_file%
     private_packages_output_file: %private_packages_output_file%
-    private_packages_data_dir: %private_packages_data_dir%
-    packagist_cache_dir: %packagist_cache_dir%
-    tmp_dir: %tmp_dir%
+    private_packages_data_dir:    %private_packages_data_dir%
+    packages_index_dir:           %packages_index_dir%
+    tmp_dir:                      %tmp_dir%

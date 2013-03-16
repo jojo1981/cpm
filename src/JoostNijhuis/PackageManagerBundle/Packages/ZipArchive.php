@@ -12,6 +12,8 @@
 namespace JoostNijhuis\PackageManagerBundle\Packages;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\Packages\ZipArchive
+ *
  * This class is a wrapper around the standard
  * PHP ZipArchive class and add a method for adding
  * a directory to the zip archive file.
@@ -25,7 +27,7 @@ class ZipArchive extends \ZipArchive
      * of the zip archive file.
      * Throws an exception if the passed directory doesn't exists.
      *
-     * @param $string directory
+     * @param string $directory
      * @throws \Exception
      */
     public function AddDirectory($directory)

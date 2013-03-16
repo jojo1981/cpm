@@ -14,6 +14,8 @@ namespace JoostNijhuis\PackageManagerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\Entity\SvnAuthentications
+ *
  * @ORM\Entity(repositoryClass="JoostNijhuis\PackageManagerBundle\Entity\SvnAuthenticationsRepository")
  * @ORM\Table(name="Svn_authentications")
  */

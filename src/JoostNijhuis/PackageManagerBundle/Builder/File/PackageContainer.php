@@ -1,12 +1,21 @@
 <?php
 
-namespace JoostNijhuis\PackageManagerBundle\Builder;
+/**
+ * This file is part of the Composer Package Manager.
+ *
+ * (c) Joost Nijhuis <jnijhuis81@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JoostNijhuis\PackageManagerBundle\Builder\File;
 
 use Symfony\Component\Filesystem\Filesystem;
 use JoostNijhuis\PackageManagerBundle\Builder\Downloader\DownloaderInterface;
 
 /**
- * JoostNijhuis\PackageManagerBundle\Builder\PackageContainer
+ * JoostNijhuis\PackageManagerBundle\Builder\File\PackageContainer
  *
  * This object is hard linked to a JSON file which contains
  * packages
@@ -32,7 +41,7 @@ class PackageContainer extends JsonFile
      * @param string $shaMethod
      * @param string $providersUrl [optional]
      * @param string $packageName [optional]
-     * @param Downloader\DownloaderInterface $downloader [optional]
+     * @param DownloaderInterface $downloader [optional]
      */
     public function __construct(
         $fileName,
@@ -53,10 +62,12 @@ class PackageContainer extends JsonFile
     /**
      * {@inheritDoc}
      */
-    public function parse()
+    public function parse($writeToDisk = true)
     {
         $this->parsePackages();
-        $this->writeFileToDisc();
+        if ($writeToDisk) {
+            $this->writeFileToDisk();
+        }
     }
 
     /**
@@ -64,7 +75,7 @@ class PackageContainer extends JsonFile
      * The content will be encoded to JSON and save to the
      * current filename, if needed the file will be renamed
      */
-    protected function writeFileToDisc()
+    protected function writeFileToDisk()
     {
         if (empty($this->providersUrl) === false) {
             $oldFileName = $this->fileName;

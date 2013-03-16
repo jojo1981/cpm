@@ -9,34 +9,40 @@
  * file that was distributed with this source code.
  */
 
-namespace JoostNijhuis\PackageManagerBundle\ComposerRepository;
+namespace JoostNijhuis\PackageManagerBundle\Builder;
 
-use JoostNijhuis\PackageManagerBundle\ComposerRepository\Exceptions\FileNotFoundException;
+use JoostNijhuis\PackageManagerBundle\Builder\Exception\FileNotFoundException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Command\Command;
 use Composer\Composer;
 use Composer\Config;
-use Composer\IO\ConsoleIO;
 use Composer\IO\NullIO;
 use Composer\Factory;
 use Composer\Json\JsonFile;
 use Composer\Package\Dumper\ArrayDumper;
 use Composer\Package\AliasPackage;
-use Composer\Package\LinkConstraint\VersionConstraint;
-use Composer\Package\PackageInterface;
-use Symfony\Component\Console\Helper\HelperSet;
+use Composer\Package\Package;
 use JoostNijhuis\PackageManagerBundle\Packages\SvnAuthentication;
-
+use JoostNijhuis\PackageManagerBundle\Builder\Config\Config as ParseConfig;
+use Symfony\Component\Filesystem\Filesystem;
 /**
+ * JoostNijhuis\PackageManagerBundle\Builder\PrivateRepositoryBuilder
+ *
  * This is the BuildHandler to build the private packages part
  * of the repository. It will build a json output file with all
  * populated packages with there versions and composer information.
  */
-class BuildHandler
+class PrivateRepositoryBuilder
 {
+
+    /**
+     * @var ParseConfig
+     */
+    protected $config;
 
     /**
      * @var string $inputFile
@@ -76,12 +82,15 @@ class BuildHandler
     /**
      * Constructor
      *
-     * @param string $inputFile  The file to read the configuration from
-     * @param string $outputFile The file to write all populated data to
+     * @param ParseConfig $config
      * @throws FileNotFoundException
      */
-    public function __construct($inputFile, $outputFile)
+    public function __construct(ParseConfig $config)
     {
+        $this->config = $config;
+        $inputFile = $this->config->getPrivatePackagesConfigFile();
+        $outputFile = $this->config->getPrivatePackagesFile();
+
         if (!file_exists($inputFile)) {
             throw new FileNotFoundException(sprintf(
                 'File: \'%s\' doesn\'t exists.',
@@ -97,8 +106,7 @@ class BuildHandler
      * Set the output interface to use for writing messages to.
      * Can be used if this class is used in a Console Command.
      *
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @void
+     * @param OutputInterface $output
      */
     public function setOutputInterface(OutputInterface $output)
     {
@@ -109,8 +117,7 @@ class BuildHandler
      * Set the input interface to use for retrieving arguments and/or
      * options. Can be used if this class is used in a Console Command.
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @return void
+     * @param InputInterface $input
      */
     public function setInputInterface(InputInterface $input)
     {
@@ -121,7 +128,7 @@ class BuildHandler
      * Set the HelperSet which helps the output interface for dialogs etc...
      * Can be used if this class is used in a Console Command.
      *
-     * @param \Symfony\Component\Console\Helper\HelperSet $helperSet
+     * @param HelperSet $helperSet
      * @return void
      */
     public function setHelperSet(HelperSet $helperSet)
@@ -134,8 +141,7 @@ class BuildHandler
      * If injected this will be used to find user credentials for
      * the svn url's.
      *
-     * @param \JoostNijhuis\PackageManagerBundle\Packages\SvnAuthentication $svnAuthentication
-     * @return void
+     * @param SvnAuthentication $svnAuthentication
      */
     public function setSvnAuthentication(SvnAuthentication $svnAuthentication)
     {
@@ -146,7 +152,7 @@ class BuildHandler
      * returns the injected HelperSet or create an
      * new instance on the fly an return that one.
      *
-     * @return \Symfony\Component\Console\Helper\HelperSet
+     * @return HelperSet
      */
     protected function getHelperSet()
     {
@@ -159,13 +165,20 @@ class BuildHandler
 
     /**
      * Build the repository
-     * @return void
      */
     public function buildRepository()
     {
+        /* Save current verbosity level */
+        $verbosityLevel = $this->output->getVerbosity();
+        /* set verbosity level to quit, this to suppress the output */
+        $this->output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
+
         $file = new JsonFile($this->inputFile);
         if (!$file->exists()) {
-            $this->writeln('<error>File not found: '. $this->inputFile .'</error>');
+            $this->writeln(
+                '<error>File not found: '. $this->inputFile .'</error>'
+            );
+
             return 1;
         }
 
@@ -173,12 +186,20 @@ class BuildHandler
         $config["require-all"] = true;
         $config = $this->addCredentials($config);
 
+        $config = array_merge($config, $this->config->getComposerConfig());
+
         /* Disable packagist by default */
         unset(Config::$defaultRepositories['packagist']);
 
         $composer = $this->getComposer($config);
         $packages = $this->selectPackages($composer);
         $this->writeData($packages);
+
+        $fs = new Filesystem();
+        $fs->remove($config['config']['cache-dir']);
+
+        /** Restore output verbosity level */
+        $this->output->setVerbosity($verbosityLevel);
     }
 
     /**
@@ -188,15 +209,11 @@ class BuildHandler
      *
      * @param array $config        The config array which the Composer
      *                             instance will use
-     * @return \Composer\Composer
+     * @return Composer
      */
     protected function getComposer(array $config)
     {
-        if (isset($this->input) && isset($this->output)) {
-            $io = new ConsoleIO($this->input, $this->output, $this->getHelperSet());
-        } else {
-            $io = new NullIO();
-        }
+        $io = new NullIO();
 
         try {
             $composer = Factory::create($io, $config);
@@ -213,7 +230,7 @@ class BuildHandler
      * repositories and add the configured packages to the
      * array. Returns an array with all collected packages.
      *
-     * @param \Composer\Composer $composer
+     * @param Composer $composer
      * @return array
      */
     protected function selectPackages(Composer $composer)
@@ -277,7 +294,7 @@ class BuildHandler
         $repo = array('packages' => array());
         $dumper = new ArrayDumper;
 
-        /* @var \Composer\Package\Package $package */
+        /* @var Package $package */
         foreach ($packages as $package) {
             if ($package->getDistUrl() != '') {
                 $url = $this->removeCredentialsFromUrl($package->getDistUrl());
@@ -287,19 +304,6 @@ class BuildHandler
                 $url = $this->removeCredentialsFromUrl($package->getSourceUrl());
                 $package->setSourceUrl($url);
             }
-
-//            if ($package->getSourceType() == 'svn') {
-//                if ($package->getSourceReference() != '') {
-//                    $reference = $this->removeRevisionFromReference($package->getSourceReference());
-//                    $package->setSourceReference($reference);
-//                }
-//            }
-//            if ($package->getDistType() == 'svn') {
-//                if ($package->getDistReference() != '') {
-//                    $reference = $this->removeRevisionFromReference($package->getDistReference());
-//                    $package->setDistReference($reference);
-//                }
-//            }
 
             $repo['packages'][$package->getPrettyName()][$package->getPrettyVersion()] = $dumper->dump($package);
         }
@@ -328,8 +332,6 @@ class BuildHandler
      * @param string|array $messages The message as an array of lines of a single string
      * @param Boolean      $newline  Whether to add a newline or not
      * @param integer      $type     The type of output (0: normal, 1: raw, 2: plain)
-     *
-     * @throws \InvalidArgumentException When unknown output type is given
      */
     protected function write($messages, $newline = false, $type = 0)
     {
@@ -407,14 +409,13 @@ class BuildHandler
     /**
      * Add credentials to an url
      *
-     * @param $url
-     * @param $username
-     * @param $password
+     * @param string $url
+     * @param string $username
+     * @param string $password
      * @return string
      */
     protected function addCredentialsToUrl($url, $username, $password)
     {
-        $retVal = "";
         $url_parts = parse_url($url);
 
         $retVal = $url_parts['scheme'] . "://" . $username . ':' . $password . '@' . $url_parts['host'];
@@ -442,7 +443,6 @@ class BuildHandler
      */
     protected function removeCredentialsFromUrl($url)
     {
-        $retVal = "";
         $url_parts = parse_url($url);
 
         $retVal = $url_parts['scheme'] . "://" . $url_parts['host'];

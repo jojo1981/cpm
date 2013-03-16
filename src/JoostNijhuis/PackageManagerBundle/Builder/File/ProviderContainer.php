@@ -1,12 +1,21 @@
 <?php
 
-namespace JoostNijhuis\PackageManagerBundle\Builder;
+/**
+ * This file is part of the Composer Package Manager.
+ *
+ * (c) Joost Nijhuis <jnijhuis81@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JoostNijhuis\PackageManagerBundle\Builder\File;
 
 use Symfony\Component\Filesystem\Filesystem;
 use JoostNijhuis\PackageManagerBundle\Builder\Downloader\DownloaderInterface;
 
 /**
- * namespace JoostNijhuis\PackageManagerBundle\Builder\ProviderContainer
+ * namespace JoostNijhuis\PackageManagerBundle\Builder\File\ProviderContainer
  *
  * This object contains a relationship with a JSON file
  * containing providers.
@@ -52,7 +61,7 @@ class ProviderContainer extends JsonFile
     /**
      * {@inheritDoc}
      */
-    public function parse()
+    public function parse($writeToDisk = true)
     {
         $this->attachPrivatePackages();
         $this->parseProviders();
@@ -87,7 +96,6 @@ class ProviderContainer extends JsonFile
             );
             $packageContainer->setConfig($this->config);
             $packageContainer->setOutputInterface($this->output);
-            $packageContainer->setInputInterface($this->input);
             $packageContainer->parse();
 
             if ($packageContainer->getHash() != $hash) {
@@ -96,7 +104,7 @@ class ProviderContainer extends JsonFile
                 );
             }
         }
-     }
+    }
 
     /**
      * Will only be triggered if parsing was needed.
@@ -128,42 +136,53 @@ class ProviderContainer extends JsonFile
      */
     protected function attachPrivatePackages()
     {
-        if ($this->config->getAttachPrivatePackages() === true) {
-            $attachTo = $this->config->getAttachTo();
-            if ($this->oldFileName == $attachTo || $this->fileName == $attachTo) {
-                $this->output->writeln('Attaching private packages');
-                $providerName = $this->config->getPrivatePackagesProviderName();
-                $fileName = realpath($this->config->getPrivatePackagesFile());
-                if (file_exists($fileName) === false) {
-                    // Maybe throw exception
-                    return;
-                }
-                $content = file_get_contents($fileName);
-                switch ($this->shaMethod) {
-                    case 'sha1':
-                        $hash = sha1($content);
-                        break;
-                    case 'sha256':
-                        $hash = hash('sha256', $content);
-                        break;
-                }
-                $this->data['providers'][$providerName] = array(
-                    $this->shaMethod => $hash
-                );
+        if ($this->oldFileName == 'p/providers-active.json'
+            || $this->oldFileName == 'p/provider-active$%hash%.json'
+        ) {
+            if ($this->config->getAttachPrivatePackages() === true) {
 
-                if (empty($this->providersUrl) === false) {
-                    $fileName = $this->basePath . str_replace(
-                        array('%package%', '%hash%'),
-                        array($providerName, $hash),
-                        $this->providersUrl
+                $originalFilename = realpath($this->config->getPrivatePackagesFile());
+                $content = file_get_contents($originalFilename);
+                $data = json_decode($content, true);
+                $providers = array();
+                foreach ($data['packages'] as $packageName => $packageData) {
+                    $providerData = array(
+                        'packages' => array(
+                            $packageName => $packageData
+                        )
                     );
-                } else {
-                    $fileName = $this->basePath . 'p/' . $providerName . '.json';
+                    $providerContent = json_encode($providerData);
+                    switch ($this->shaMethod) {
+                        case 'sha1':
+                            $hash = sha1($providerContent);
+                            break;
+                        case 'sha256':
+                            $hash = hash('sha256', $providerContent);
+                            break;
+                    }
+
+                    if (empty($this->providersUrl) === false) {
+                        $providerName = $packageName;
+                        $filename = str_replace(
+                            array('%package%', '%hash%'),
+                            array($packageName, $hash),
+                            $this->providersUrl
+                        );
+                    } else {
+                        $filename = 'p/' . $packageName . '.json';
+                        $providerName = $filename;
+                    }
+
+                    $filename = $this->basePath . $filename;
+                    $fs = new Filesystem();
+                    $fs->mkdir(dirname($filename));
+                    file_put_contents($filename, $providerContent);
+
+                    $providers[$providerName] = array(
+                        $this->shaMethod => $hash
+                    );
                 }
-                $fs = new Filesystem();
-                $fs->mkdir(dirname($fileName));
-                $this->output->writeln('Saving private packages (not parsed) to: ' . $fileName);
-                file_put_contents($fileName, $content);
+                $this->data['providers'] = array_merge($this->data['providers'], $providers);
             }
         }
     }

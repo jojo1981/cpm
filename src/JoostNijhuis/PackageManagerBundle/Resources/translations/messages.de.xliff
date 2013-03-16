@@ -2,27 +2,27 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" datatype="plaintext" original="file.ext">
         <body>
-            <trans-unit id="1">
+            <trans-unit id="f.default.license">
                 <source>f.default.license</source>
                 <target>Lizenz</target>
             </trans-unit>
-            <trans-unit id="2">
+            <trans-unit id="f.default.authors">
                 <source>f.default.authors</source>
                 <target>Autor (en)</target>
             </trans-unit>
-            <trans-unit id="3">
+            <trans-unit id="f.default.releases">
                 <source>f.default.releases</source>
                 <target>Ausgabe (n)</target>
             </trans-unit>
-            <trans-unit id="4">
+            <trans-unit id="f.copyrights">
                 <source>f.copyrights</source>
                 <target><![CDATA[Urheberrechte <a href="%company_url%" target="%target%">%company_name%</a> %year%]]></target>
             </trans-unit>
-            <trans-unit id="5">
+            <trans-unit id="f.language_switcher.choose.language">
                 <source>f.language_switcher.choose.language</source>
                 <target><![CDATA[Sprache w&auml;hlen:]]></target>
             </trans-unit>
-            <trans-unit id="6">
+            <trans-unit id="f.title_code_block">
                 <source>f.title_code_block</source>
                 <target><![CDATA[Hinzuf&uuml;gen des Repository]]></target>
             </trans-unit>

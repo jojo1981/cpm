@@ -14,6 +14,8 @@ namespace JoostNijhuis\PackageManagerBundle\Packages;
 use Doctrine\ORM\EntityManager;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\Packages\SvnAuthentication
+ *
  * Svn Authentication helper class, this class will read svn user credentials
  * from the database and tries to retrieve the right user credentials for a
  * certain svn url.
@@ -44,7 +46,9 @@ class SvnAuthentication
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
-        $this->repository = $this->em->getRepository('JoostNijhuis\PackageManagerBundle\Entity\SvnAuthentications');
+        $this->repository = $this->em->getRepository(
+            'JoostNijhuis\PackageManagerBundle\Entity\SvnAuthentications'
+        );
     }
 
     /**
@@ -77,8 +81,9 @@ class SvnAuthentication
         $this->data = array();
         $records = $this->repository->findAll();
         foreach ($records as $record) {
-            $this->data[$record->getUrl()]['username'] = $record->getUsername();
-            $this->data[$record->getUrl()]['password'] = $record->getPassword();
+            $url = $record->getUrl();
+            $this->data[$url]['username'] = $record->getUsername();
+            $this->data[$url]['password'] = $record->getPassword();
         }
     }
 

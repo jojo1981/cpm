@@ -15,7 +15,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use JoostNijhuis\PackageManagerBundle\Packages\PrivatePackagesHandler;
 
+/**
+ * JoostNijhuis\PackageManagerBundle\Controller\DefaultController
+ */
 class DefaultController extends Controller
 {
 
@@ -39,7 +43,10 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $objPrivatePackagesHandler = $this->get('joost_nijhuis_package_manager_private_packages_handler');
+        /** @var PrivatePackagesHandler $objPrivatePackagesHandler */
+        $objPrivatePackagesHandler = $this->get(
+            'joost_nijhuis_package_manager_private_packages_handler'
+        );
         $arrPackageData = $objPrivatePackagesHandler->getDataForTemplate();
 
         $json_example = '{

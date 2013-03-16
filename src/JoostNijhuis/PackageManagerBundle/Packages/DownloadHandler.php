@@ -15,13 +15,22 @@ use Composer\Factory;
 use Composer\IO\NullIO;
 use Composer\Package\PackageInterface;
 use Composer\Util\Filesystem;
+use Composer\Downloader\DownloaderInterface;
 use Symfony\Component\HttpFoundation\Response;
+use JoostNijhuis\PackageManagerBundle\Builder\Config\Config;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\Packages\DownloadHandler
+ *
  * This class can be used for downloading packages.
  */
 class DownloadHandler
 {
+
+    /**
+     * @var Config
+     */
+    protected $config;
 
     /**
      * @var string
@@ -41,11 +50,13 @@ class DownloadHandler
     /**
      * Constructor
      *
-     * @param string $package_dir              The directory to save the downloaded packages to
-     * @param null|string $temp_dir [optional] The temporarily directory to use, if null the system default will be used
+     * @param Config $config
      */
-    public function __construct($package_dir, $temp_dir = null)
+    public function __construct(Config $config)
     {
+        $temp_dir = $config->getTmpPath();
+        $package_dir = $config->getPackageDataDirectory();
+
         $this->setPackageDirectory($package_dir);
         if ($temp_dir === null) {
             $temp_dir = sys_get_temp_dir();
@@ -58,7 +69,7 @@ class DownloadHandler
      * If injected this will be used to find user credentials for
      * the svn url's.
      *
-     * @param \JoostNijhuis\PackageManagerBundle\Packages\SvnAuthentication $svnAuthentication
+     * @param SvnAuthentication $svnAuthentication
      * @return void
      */
     public function setSvnAuthentication(SvnAuthentication $svnAuthentication)
@@ -77,13 +88,13 @@ class DownloadHandler
      * Returns the absolute path of the downloaded file which has been saved
      * as a Zip archive file.
      *
-     * @param \Composer\Package\PackageInterface $package
+     * @param PackageInterface $package
      * @return string
      */
     protected function download(PackageInterface $package)
     {
         $fs = new Filesystem();
-        
+
         $package_dir = $this->package_dir . DIRECTORY_SEPARATOR .
             str_replace('/', DIRECTORY_SEPARATOR, $package->getName());
         $package_file = $package_dir . DIRECTORY_SEPARATOR . $package->getVersion() . '.zip';
@@ -97,14 +108,15 @@ class DownloadHandler
 
             $objDownload = $this->getDownloader($package);
             $objDownload->download($package, $tmpDirPackage);
-            
+
             $objZipArchive = new ZipArchive();
             $objZipArchive->open($package_file, ZIPARCHIVE::CREATE);
             $objZipArchive->AddDirectory($tmpDirPackage);
             $objZipArchive->close();
-            
+
             $fs->removeDirectory($tmpDirPackage);
         }
+
         return $package_file;
     }
 
@@ -114,38 +126,42 @@ class DownloadHandler
      * method will return a Response object which can be returned into a
      * controller action.
      *
-     * @param \Composer\Package\PackageInterface $package
-     * @return bool|\Symfony\Component\HttpFoundation\Response
+     * @param PackageInterface $package
+     * @param null|string $version [optional]
+     * @return bool|Response
      */
-    public function getDownloadResponse(PackageInterface $package)
+    public function getDownloadResponse(PackageInterface $package, $version = null)
     {
+        if (empty($version)) {
+            $version = $package->getVersion();
+        }
+
         $package_file = $this->download($package);
-        
+        $fileName = $version . '.zip';
+
         if (!file_exists($package_file)) {
             return false;
         }
-        
-        $fileName      = pathinfo($package_file, PATHINFO_FILENAME);
-        $fileExtention = pathinfo($package_file, PATHINFO_EXTENSION);
-        $fileName      = $fileName . '.' . $fileExtention;
+
         $fileSize      = filesize($package_file);
         $fileContent   = file_get_contents($package_file);
         $fileMimeType  = mime_content_type($package_file);
 
         $headers = array(
-            'Pragma'                    => 'public', 
-            'Expires'                   => '0', 
-            'Cache-Control'             => 'must-revalidate, post-check=0, pre-check=0', 
-            'Cache-Control'             => 'public', 
-            'Content-Description'       => 'File Transfer', 
-            'Content-type'              => $fileMimeType, 
-            'Content-Disposition'       => 'attachment; filename="' . $fileName . '"', 
-            'Content-Transfer-Encoding' => 'binary', 
+            'Pragma'                    => 'public',
+            'Expires'                   => '0',
+            'Cache-Control'             => 'must-revalidate, post-check=0, pre-check=0',
+            'Cache-Control'             => 'public',
+            'Content-Description'       => 'File Transfer',
+            'Content-type'              => $fileMimeType,
+            'Content-Disposition'       => 'attachment; filename="' . $fileName . '"',
+            'Content-Transfer-Encoding' => 'binary',
             'Content-Length'            => $fileSize
         );
 
         $response = new Response($fileContent, 200, $headers);
         $response->send();
+
         return $response;
     }
 
@@ -153,8 +169,8 @@ class DownloadHandler
      * Returns a Downloader object, depending on the package
      * dist/source type: svn, git, zip etc...
      *
-     * @param \Composer\Package\PackageInterface $package
-     * @return \Composer\Downloader\DownloaderInterface|SvnDownloader
+     * @param PackageInterface $package
+     * @return DownloaderInterface|SvnDownloader
      */
     protected function getDownloader(PackageInterface $package)
     {
@@ -193,8 +209,8 @@ class DownloadHandler
     {
         if (!is_dir($directory)) {
             throw new \Exception(sprintf(
-            'Temp directory: \'%s\' doesn\'t exists',
-            $directory
+                'Temp directory: \'%s\' doesn\'t exists',
+                $directory
             ));
         }
         $this->temp_dir = $directory;
@@ -213,8 +229,8 @@ class DownloadHandler
     {
         if (!is_dir($directory)) {
             throw new \Exception(sprintf(
-            'Package directory: \'%s\' doesn\'t exists',
-            $directory
+                'Package directory: \'%s\' doesn\'t exists',
+                $directory
             ));
         }
         $this->package_dir = $directory;

@@ -15,6 +15,8 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\DependencyInjection\Configuration
+ *
  * The Configuration class which will be used to setup
  * all configuration options for this bundle
  * These are the options which can be set and/or overriden in the
@@ -24,9 +26,7 @@ class Configuration implements ConfigurationInterface
 {
 
     /**
-     * Returns a tree with all options with there configurations
-     *
-     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder
+     * {inheritDoc}
      */
     public function getConfigTreeBuilder()
     {
@@ -43,11 +43,14 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->scalarNode('company_url')
                 ->end()
-                ->booleanNode('parse_only_stable')
+                ->booleanNode('enable_packagist_proxy')
                     ->defaultTrue()
                 ->end()
-                    ->booleanNode('enable_cache')
-                    ->defaultFalse()
+                ->booleanNode('parse_packages')
+                    ->defaultTrue()
+                ->end()
+                ->booleanNode('attach_private_packages')
+                    ->defaultTrue()
                 ->end()
                 ->scalarNode('packagist_url')
                     ->defaultValue('http://packagist.org')
@@ -64,7 +67,7 @@ class Configuration implements ConfigurationInterface
                     ->isRequired()
                     ->cannotBeEmpty()
                 ->end()
-                ->scalarNode('packagist_cache_dir')
+                ->scalarNode('packages_index_dir')
                     ->isRequired()
                     ->cannotBeEmpty()
                 ->end()

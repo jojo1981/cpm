@@ -1,15 +1,24 @@
 <?php
 
-namespace JoostNijhuis\PackageManagerBundle\Builder;
+/**
+ * This file is part of the Composer Package Manager.
+ *
+ * (c) Joost Nijhuis <jnijhuis81@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace JoostNijhuis\PackageManagerBundle\Builder\File;
 
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Composer\Package\Version\VersionParser;
 use JoostNijhuis\PackageManagerBundle\Builder\Downloader\DownloaderInterface;
+use JoostNijhuis\PackageManagerBundle\Builder\Config\Config;
 
 /**
- *
+ * JoostNijhuis\PackageManagerBundle\Builder\File\JsonFile
  */
 abstract class JsonFile
 {
@@ -54,7 +63,7 @@ abstract class JsonFile
     protected $shaMethod = 'sha256';
 
     /**
-     * @var ParseConfig
+     * @var Config
      */
     protected $config;
 
@@ -73,9 +82,9 @@ abstract class JsonFile
      * setting from. With this ParseConfig object you can
      * determine the parse behavior
      *
-     * @param ParseConfig $config
+     * @param Config $config
      */
-    public function setConfig(ParseConfig $config)
+    public function setConfig(Config $config)
     {
         $this->config = $config;
     }
@@ -90,18 +99,6 @@ abstract class JsonFile
     public function setOutputInterface(OutputInterface $output)
     {
         $this->output = $output;
-    }
-
-    /**
-     * Set the input interface to use for retrieving arguments and/or
-     * options. Can be used if this class is used in a Console Command.
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @return void
-     */
-    public function setInputInterface(InputInterface $input)
-    {
-        $this->input = $input;
     }
 
     /**
@@ -120,8 +117,10 @@ abstract class JsonFile
      * This method start parsing this JSON file it can invoke
      * several other JSON file to be parsed. So a chain reaction
      * can be started.
+     *
+     * @param bool $writeToDisk
      */
-    abstract public function parse();
+    abstract public function parse($writeToDisk = true);
 
     /**
      * Get hash string for this file using the sha method
@@ -161,25 +160,32 @@ abstract class JsonFile
      */
     protected function parsePackages()
     {
-        if ($this->config->getParse() && isset($this->data['packages'])) {
-            $prefixDownloadUri = $this->config->getDownloadUrlPrefix();
+        $prefixDownloadUri = $this->config->getDownloadUrlPrefix();
+        if (isset($this->data['packages'])) {
+            $versionParser = new VersionParser();
             foreach ($this->data['packages'] as $packageName => $packageData) {
                 foreach ($packageData as $version => $data) {
+                    if ($this->config->getParse() && isset($this->data['packages'])) {
 
-                    $doParse = true;
-                    if ($this->config->getParseOnlyStable()) {
                         $stability = VersionParser::parseStability($version);
                         $doParse = $stability !== 'dev';
+
+                        if ($doParse) {
+                            $data['dist'] = array(
+                                'type'      => 'zip',
+                                'reference' => $version,
+                                'shasum'    => '',
+                                'url'       => $prefixDownloadUri . $packageName . '/' . $version . '.zip'
+                            );
+
+                            if (isset($data['source'])) {
+                                unset($data['source']);
+                            }
+                        }
                     }
 
-                    if ($doParse) {
-                        $data['dist']['type']      = 'zip';
-                        $data['dist']['reference'] = $data['version'];
-                        $data['dist']['shasum']    = '';
-                        $data['dist']['url']       = $prefixDownloadUri . $packageName . '/' . $version . '.zip';
-                        if (isset($data['source'])) {
-                            unset($data['source']);
-                        }
+                    if (isset($data['uid']) === false) {
+                        $data['uid'] = $this->config->getUid();
                     }
 
                     $this->data['packages'][$packageName][$version] = $data;
@@ -202,8 +208,11 @@ abstract class JsonFile
 
         if (file_exists($fileName) === false) {
             if ($this->downloader instanceof DownloaderInterface) {
-                $urlPath = str_replace($basePath, '', $fileName);
-                $urlPath = str_replace(DIRECTORY_SEPARATOR, '/', $urlPath);
+                $urlPath = str_replace(
+                    array($basePath, DIRECTORY_SEPARATOR),
+                    array('', '/'),
+                    $fileName
+                );
                 $content = $this->downloader->download($urlPath);
                 $fs = new Filesystem();
                 $fs->mkdir(dirname($fileName));
@@ -216,6 +225,14 @@ abstract class JsonFile
         $this->fileName = $fileName;
         $this->basePath = $basePath;
         $this->data = json_decode(file_get_contents($this->fileName), true);
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
 }

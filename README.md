@@ -33,7 +33,7 @@ The following directories need to be created:
 - ./app/tmp
 - ./app/logs
 - ./app/cache
-- ./data/cache
+- ./data/index
 - ./data/packages
 
 ### 1.4 Set file permissions for the user under which the webserver runs

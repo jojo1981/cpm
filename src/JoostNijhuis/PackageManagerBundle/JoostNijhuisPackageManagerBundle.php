@@ -14,9 +14,9 @@ namespace JoostNijhuis\PackageManagerBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * The bundle class, required when building a bundle
+ * JoostNijhuis\PackageManagerBundle\JoostNijhuisPackageManagerBundle
  *
- * @author Joost Nijhuis <jnijhuis81@gmail.com>
+ * The bundle class, required when building a bundle
  */
 class JoostNijhuisPackageManagerBundle extends Bundle
 {

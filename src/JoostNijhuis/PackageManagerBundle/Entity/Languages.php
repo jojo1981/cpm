@@ -14,6 +14,8 @@ namespace JoostNijhuis\PackageManagerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\Entity\Languages
+ *
  * @ORM\Entity(repositoryClass="JoostNijhuis\PackageManagerBundle\Entity\LanguagesRepository")
  * @ORM\Table(name="languages")
  */

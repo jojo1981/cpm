@@ -14,6 +14,8 @@ namespace JoostNijhuis\PackageManagerBundle\Packages;
 use Composer\Package\Package;
 
 /**
+ * JoostNijhuis\PackageManagerBundle\Packages\PackageFactory
+ *
  * Package factory class, will create a new Package object
  * from an array.
  */
