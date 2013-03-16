@@ -100,11 +100,11 @@ class RepositoryBuilder
         InputInterface $input,
         HelperSet $helperSet
     ) {
-//        $this->builder->setOutputInterface($output);
-//        $this->builder->setInputInterface($input);
-//        $this->builder->setHelperSet($helperSet);
-//        $this->builder->buildRepository();
-//
+        $this->builder->setOutputInterface($output);
+        $this->builder->setInputInterface($input);
+        $this->builder->setHelperSet($helperSet);
+        $this->builder->buildRepository();
+
         $fileName = implode(DIRECTORY_SEPARATOR, array(
             $this->config->getIndexPath(),
             'packages.json'

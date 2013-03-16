@@ -43,6 +43,10 @@ class PackagesJson extends JsonFile
         $this->providersUrl = $this->data['providers-url'];
     }
 
+    /**
+     * Attach private packages and only rebuild the files
+     * which will be affected by this (recalculating the hashes).
+     */
     public function attachPrivatePackages()
     {
         $this->parseMainData();
@@ -83,6 +87,9 @@ class PackagesJson extends JsonFile
         $this->output->writeln('Take about: ' . $timeTakenMinutes . ' minutes.');
     }
 
+    /**
+     * Parse main data
+     */
     protected function parseMainData()
     {
         unset($this->data['notify_batch']);
