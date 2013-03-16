@@ -1,5 +1,5 @@
 {
-    "hash": "12e45dcb1a1fe0e13650f1c9e4dc65a0",
+    "hash": "ff8516dfa29fdf0488269b6fada3236a",
     "packages": [
         {
             "name": "composer/composer",
@@ -7,12 +7,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "57fe33d0f371a95232d74e64c5c559eeac77a24f"
+                "reference": "d929a0813ae473272d151d9ebb2af7ebae451e48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/57fe33d0f371a95232d74e64c5c559eeac77a24f",
-                "reference": "57fe33d0f371a95232d74e64c5c559eeac77a24f",
+                "url": "https://api.github.com/repos/composer/composer/zipball/d929a0813ae473272d151d9ebb2af7ebae451e48",
+                "reference": "d929a0813ae473272d151d9ebb2af7ebae451e48",
                 "shasum": ""
             },
             "require": {
@@ -68,7 +68,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2013-03-11 13:02:49"
+            "time": "2013-03-16 15:14:55"
         },
         {
             "name": "doctrine/annotations",
@@ -349,12 +349,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "569f1aed578585df904c7dbfc43aa39cb09877cc"
+                "reference": "8df9cd3668363f017dfea56b5ad448ea74dae49b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/569f1aed578585df904c7dbfc43aa39cb09877cc",
-                "reference": "569f1aed578585df904c7dbfc43aa39cb09877cc",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/8df9cd3668363f017dfea56b5ad448ea74dae49b",
+                "reference": "8df9cd3668363f017dfea56b5ad448ea74dae49b",
                 "shasum": ""
             },
             "require": {
@@ -404,7 +404,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2013-03-04 22:37:48"
+            "time": "2013-03-14 21:55:05"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -605,12 +605,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "304acf0a1af15ebe049231b84a7630c75ecbe62d"
+                "reference": "8d78b90bca909344720b911fda346009b9cb9fcb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/304acf0a1af15ebe049231b84a7630c75ecbe62d",
-                "reference": "304acf0a1af15ebe049231b84a7630c75ecbe62d",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/8d78b90bca909344720b911fda346009b9cb9fcb",
+                "reference": "8d78b90bca909344720b911fda346009b9cb9fcb",
                 "shasum": ""
             },
             "require": {
@@ -667,7 +667,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2013-02-21 18:03:42"
+            "time": "2013-03-14 22:42:28"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -721,7 +721,7 @@
                 "json",
                 "schema"
             ],
-            "time": "2012-01-02 16:33:17"
+            "time": "2012-01-03 00:33:17"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -847,7 +847,7 @@
                 "log",
                 "logging"
             ],
-            "time": "2012-08-29 04:53:20"
+            "time": "2012-08-29 11:53:20"
         },
         {
             "name": "seld/jsonlint",
@@ -1265,16 +1265,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "2.1.x-dev",
+            "version": "v2.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "d77b97cb075f022b6b554553d9779185cd26b277"
+                "reference": "v2.1.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/d77b97cb075f022b6b554553d9779185cd26b277",
-                "reference": "d77b97cb075f022b6b554553d9779185cd26b277",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/v2.1.8",
+                "reference": "v2.1.8",
                 "shasum": ""
             },
             "require": {
@@ -1349,7 +1349,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2013-03-12 11:04:38"
+            "time": "2013-02-23 21:28:36"
         },
         {
             "name": "twig/extensions",
@@ -1456,6 +1456,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "symfony/symfony": 0,
         "composer/composer": 20
     },
     "platform": {

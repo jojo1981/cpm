@@ -20,10 +20,9 @@ defined('APPLICATION_ENV')
 || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
 
 if (APPLICATION_ENV === 'prod') {
-//    $loader = require __DIR__.'/../app/autoload.php';
-//    $loader = new ApcClassLoader('joost_nijhuis_composer_package_manager', $loader);
-//    $loader->register(true);
-    $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
+    $loader = require __DIR__.'/../app/autoload.php';
+    $loader = new ApcClassLoader('joost_nijhuis_composer_package_manager', $loader);
+    $loader->register(true);
     $debug  = false;
 } elseif (APPLICATION_ENV === 'dev') {
     $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
@@ -35,9 +34,9 @@ require_once __DIR__.'/../app/AppKernel.php';
 $kernel = new AppKernel(APPLICATION_ENV, $debug);
 $kernel->loadClassCache();
 
-//if (APPLICATION_ENV == 'prod') {
-//    $kernel = new AppCache($kernel);
-//}
+if (APPLICATION_ENV == 'prod') {
+    $kernel = new AppCache($kernel);
+}
 
 $request = Request::createFromGlobals();
 
