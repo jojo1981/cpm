@@ -183,6 +183,15 @@ class PrivateRepositoryBuilder
         }
 
         $config = $file->read();
+        if (isset($config['repositories'])) {
+            foreach ($config['repositories'] as $index => $repository)
+            {
+                if (isset($repository['type']) && $repository['type'] == 'package') {
+                    $config['repositories'][$index]['package']['name'] = strtolower($config['repositories'][$index]['package']['name']);
+                }
+            }
+        }
+
         $config["require-all"] = true;
         $config = $this->addCredentials($config);
 
