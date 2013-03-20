@@ -62,11 +62,15 @@ class PackagesController extends Controller
         if ($config->getEnablePackagistProxy() == false) {
             if ($file == 'packages.json') {
                 $fileName = $config->getPrivatePackagesFile();
-                $PackageContainer = new PackageContainer($fileName, dirname($fileName), 'sha265');
-                $PackageContainer->setConfig($config);
-                $PackageContainer->parse(false);
-                $data = $PackageContainer->getData();
-                $content = json_encode($data);
+                if ($config->getParse()) {
+                    $PackageContainer = new PackageContainer($fileName, dirname($fileName), 'sha265');
+                    $PackageContainer->setConfig($config);
+                    $PackageContainer->parse(false);
+                    $data = $PackageContainer->getData();
+                    $content = json_encode($data);
+                } else {
+                    return file_get_contents($fileName);
+                }
             }
         } else {
             $indexDir = $config->getIndexPath();
