@@ -63,7 +63,7 @@ class Language
      * Set name
      *
      * @param string $name
-     * @return Languages
+     * @return Language
      */
     public function setName($name)
     {
@@ -86,7 +86,7 @@ class Language
      * Set code
      *
      * @param integer $code
-     * @return Languages
+     * @return Language
      */
     public function setCode($code)
     {
@@ -109,7 +109,7 @@ class Language
      * Set active
      *
      * @param integer $active
-     * @return Languages
+     * @return Language
      */
     public function setActive($active)
     {
@@ -132,7 +132,7 @@ class Language
      * Set order
      *
      * @param integer $order
-     * @return Languages
+     * @return Language
      */
     public function setOrder($order)
     {
@@ -155,7 +155,7 @@ class Language
      * Set sort order
      *
      * @param integer $sortOrder
-     * @return Languages
+     * @return Language
      */
     public function setSortOrder($sortOrder)
     {

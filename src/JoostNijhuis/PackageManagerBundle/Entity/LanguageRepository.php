@@ -30,7 +30,7 @@ class LanguageRepository extends EntityRepository
         $data = $this->createQueryBuilder('l')
             ->select('l.code, l.name')
             ->where('l.active = 1')
-            ->orderBy('l.sort_order', 'ASC')
+            ->orderBy('l.sortOrder', 'ASC')
             ->getQuery()
             ->getArrayResult();
         
@@ -53,7 +53,7 @@ class LanguageRepository extends EntityRepository
         $data = $this->createQueryBuilder('l')
             ->select('l.code')
             ->where('l.active = 1')
-            ->orderBy('l.sort_order', 'ASC')
+            ->orderBy('l.sortOrder', 'ASC')
             ->getQuery()
             ->getArrayResult();
         

@@ -40,7 +40,7 @@ class LanguageSwitcher extends ContainerAware
         $request = $this->getRequest();
         
         $em = $this->getDoctrine()->getEntityManager();
-        $languagesRepository = $em->getRepository('JoostNijhuis\PackageManagerBundle\Entity\Languages');
+        $languagesRepository = $em->getRepository('JoostNijhuis\PackageManagerBundle\Entity\Language');
         $arrLanguages = $languagesRepository->getForSelectBox();
         
         $form = $this->createFormBuilder(null, array('csrf_protection' => false))

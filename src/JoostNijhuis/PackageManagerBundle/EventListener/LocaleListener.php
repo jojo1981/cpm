@@ -99,7 +99,7 @@ class LocaleListener
         if ($this->container->has('doctrine.orm.default_entity_manager')) {
             /* @var $em Doctrine\ORM\EntityManager */
             $em = $this->container->get('doctrine.orm.default_entity_manager');
-            $languageRepository = $em->getRepository('JoostNijhuis\PackageManagerBundle\Entity\Languages');
+            $languageRepository = $em->getRepository('JoostNijhuis\PackageManagerBundle\Entity\Language');
             $this->availableLocales = $languageRepository->getAvailableLocales();
         }
 
