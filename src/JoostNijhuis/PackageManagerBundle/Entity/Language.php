@@ -14,41 +14,40 @@ namespace JoostNijhuis\PackageManagerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * JoostNijhuis\PackageManagerBundle\Entity\Languages
+ * JoostNijhuis\PackageManagerBundle\Entity\Language
  *
- * @ORM\Entity(repositoryClass="JoostNijhuis\PackageManagerBundle\Entity\LanguagesRepository")
+ * @ORM\Entity(repositoryClass="JoostNijhuis\PackageManagerBundle\Entity\LanguageRepository")
  * @ORM\Table(name="languages")
  */
-class Languages
+class Language
 {
 
     /**
      * @ORM\Id
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
     
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     protected $name;
     
     /**
-     * @ORM\Column(type="string", length=2)
+     * @ORM\Column(name="code", type="string", length=2, nullable=false)
      */
     protected $code;
     
     /**
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(name="active", type="boolean", nullable=false)
      */
-    protected $active;
+    protected $active = 0;
     
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="sort_order", type="integer", nullable=false)
      */
-    protected $sortorder;
-
+    protected $sortOrder;
 
     /**
      * Get id
@@ -152,28 +151,27 @@ class Languages
         return $this->order;
     }
 
-
     /**
-     * Set sortorder
+     * Set sort order
      *
-     * @param integer $sortorder
+     * @param integer $sortOrder
      * @return Languages
      */
-    public function setSortorder($sortorder)
+    public function setSortOrder($sortOrder)
     {
-        $this->sortorder = $sortorder;
+        $this->sortOrder = $sortOrder;
     
         return $this;
     }
 
     /**
-     * Get sortorder
+     * Get sort order
      *
      * @return integer 
      */
-    public function getSortorder()
+    public function getSortOrder()
     {
-        return $this->sortorder;
+        return $this->sortOrder;
     }
 
 }

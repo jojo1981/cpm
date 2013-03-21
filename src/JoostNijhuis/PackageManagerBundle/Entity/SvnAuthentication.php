@@ -14,12 +14,12 @@ namespace JoostNijhuis\PackageManagerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * JoostNijhuis\PackageManagerBundle\Entity\SvnAuthentications
+ * JoostNijhuis\PackageManagerBundle\Entity\SvnAuthentication
  *
- * @ORM\Entity(repositoryClass="JoostNijhuis\PackageManagerBundle\Entity\SvnAuthenticationsRepository")
- * @ORM\Table(name="Svn_authentications")
+ * @ORM\Entity(repositoryClass="JoostNijhuis\PackageManagerBundle\Entity\SvnAuthenticationRepository")
+ * @ORM\Table(name="svn_authentications")
  */
-class SvnAuthentications
+class SvnAuthentication
 {
 
     /**
@@ -44,7 +44,6 @@ class SvnAuthentications
      */
     private $password;
 
-
     /**
      * Get id
      *
@@ -59,7 +58,7 @@ class SvnAuthentications
      * Set url
      *
      * @param string $url
-     * @return SvnAuthentications
+     * @return SvnAuthentication
      */
     public function setUrl($url)
     {
@@ -82,7 +81,7 @@ class SvnAuthentications
      * Set username
      *
      * @param string $username
-     * @return SvnAuthentications
+     * @return SvnAuthentication
      */
     public function setUsername($username)
     {
@@ -105,7 +104,7 @@ class SvnAuthentications
      * Set password
      *
      * @param string $password
-     * @return SvnAuthentications
+     * @return SvnAuthentication
      */
     public function setPassword($password)
     {

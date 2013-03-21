@@ -47,7 +47,7 @@ class SvnAuthentication
     {
         $this->em = $em;
         $this->repository = $this->em->getRepository(
-            'JoostNijhuis\PackageManagerBundle\Entity\SvnAuthentications'
+            'JoostNijhuis\PackageManagerBundle\Entity\SvnAuthentication'
         );
     }
 
