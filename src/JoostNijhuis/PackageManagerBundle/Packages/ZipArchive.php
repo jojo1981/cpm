@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Packages;
 
 /**
@@ -20,7 +18,6 @@ namespace JoostNijhuis\PackageManagerBundle\Packages;
  */
 class ZipArchive extends \ZipArchive
 {
-
     /**
      * Add a whole directory to the zip archive file, all files and
      * directories in the passed directory will be added into the root
@@ -60,5 +57,4 @@ class ZipArchive extends \ZipArchive
             }
         }
     }
-    
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -21,7 +19,6 @@ use JoostNijhuis\PackageManagerBundle\Builder\RepositoryBuilder;
  */
 class BuildRepositoryCommand extends ContainerAwareCommand
 {
-
     /**
      * {@inheritDoc}
      */
@@ -48,8 +45,6 @@ EOT
             'joost_nijhuis_package_manager.repository_builder'
         );
 
-        //$repositoryBuilder->buildRepository($output);
         $repositoryBuilder->buildRepository($output);
     }
-
 }

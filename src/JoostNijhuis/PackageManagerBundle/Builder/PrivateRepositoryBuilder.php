@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Builder;
 
 use JoostNijhuis\PackageManagerBundle\Builder\Exception\FileNotFoundException;
@@ -26,9 +24,15 @@ use Composer\Json\JsonFile;
 use Composer\Package\Dumper\ArrayDumper;
 use Composer\Package\AliasPackage;
 use Composer\Package\Package;
+use Composer\DependencyResolver\Pool;
+use Composer\Package\LinkConstraint\MultiConstraint;
+use Composer\Package\Link;
+use Composer\Repository\ComposerRepository;
+use Composer\Repository\PlatformRepository;
 use JoostNijhuis\PackageManagerBundle\Packages\SvnAuthentication;
 use JoostNijhuis\PackageManagerBundle\Builder\Config\Config as ParseConfig;
 use Symfony\Component\Filesystem\Filesystem;
+
 /**
  * JoostNijhuis\PackageManagerBundle\Builder\PrivateRepositoryBuilder
  *
@@ -38,7 +42,6 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class PrivateRepositoryBuilder
 {
-
     /**
      * @var ParseConfig
      */
@@ -78,6 +81,11 @@ class PrivateRepositoryBuilder
      * @var SvnAuthentication
      */
     protected $svnAuthentication;
+
+    /**
+     * @var int
+     */
+    protected $rememberVerbosityLevel;
 
     /**
      * Constructor
@@ -128,10 +136,10 @@ class PrivateRepositoryBuilder
      * Set the HelperSet which helps the output interface for dialogs etc...
      * Can be used if this class is used in a Console Command.
      *
-     * @param HelperSet $helperSet
+     * @param null|HelperSet $helperSet
      * @return void
      */
-    public function setHelperSet(HelperSet $helperSet)
+    public function setHelperSet(HelperSet $helperSet = null)
     {
         $this->helperSet = $helperSet;
     }
@@ -156,7 +164,7 @@ class PrivateRepositoryBuilder
      */
     protected function getHelperSet()
     {
-        if (!isset($this->helperSet)) {
+        if (!$this->helperSet instanceof HelperSet) {
             $this->helperSet = new HelperSet();
         }
 
@@ -164,18 +172,36 @@ class PrivateRepositoryBuilder
     }
 
     /**
+     * Method for suppressing the output
+     */
+    protected function suppressOutput()
+    {
+        /* Save current verbosity level */
+        $this->rememberVerbosityLevel = $this->output->getVerbosity();
+
+        /* set verbosity level to quit, this to suppress the output */
+        $this->output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
+    }
+
+    /**
+     * Restore verbosity level
+     */
+    protected function restoreVerbosityLevel()
+    {
+        /* Restore output verbosity level */
+        $this->output->setVerbosity($this->rememberVerbosityLevel);
+    }
+
+    /**
      * Build the repository
      */
     public function buildRepository()
     {
-        /* Save current verbosity level */
-        $verbosityLevel = $this->output->getVerbosity();
-        /* set verbosity level to quit, this to suppress the output */
-        $this->output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
+        $this->suppressOutput();
 
         $file = new JsonFile($this->inputFile);
         if (!$file->exists()) {
-            $this->writeln(
+            $this->writeLine(
                 '<error>File not found: '. $this->inputFile .'</error>'
             );
 
@@ -200,15 +226,21 @@ class PrivateRepositoryBuilder
         /* Disable packagist by default */
         unset(Config::$defaultRepositories['packagist']);
 
+        $requireAll = isset($config['require-all']) && true === $config['require-all'];
+        $requireDependencies = isset($config['require-dependencies']) && true === $config['require-dependencies'];
+        if (!$requireAll && !isset($config['require'])) {
+            $this->output->writeln('No explicit requires defined, enabling require-all');
+            $requireAll = true;
+        }
+
         $composer = $this->getComposer($config);
-        $packages = $this->selectPackages($composer);
+        $packages = $this->selectPackages($composer, $requireAll, $requireDependencies);
         $this->writeData($packages);
 
         $fs = new Filesystem();
         $fs->remove($config['config']['cache-dir']);
 
-        /** Restore output verbosity level */
-        $this->output->setVerbosity($verbosityLevel);
+        $this->restoreVerbosityLevel();
     }
 
     /**
@@ -240,55 +272,109 @@ class PrivateRepositoryBuilder
      * array. Returns an array with all collected packages.
      *
      * @param Composer $composer
+     * @param bool $requireAll
+     * @param bool $requireDependencies
      * @return array
      */
-    protected function selectPackages(Composer $composer)
+    private function selectPackages(Composer $composer, $requireAll, $requireDependencies)
     {
-        $verbose = false;
-        if (isset($this->input) && $this->input->hasOption('verbose')) {
-            $verbose - $this->input->getOption('verbose');
-        }
-
-        $targets = array();
         $selected = array();
 
-        foreach ($composer->getPackage()->getRequires() as $link) {
-            $targets[$link->getTarget()] = array(
-                'matched' => false,
-                'link' => $link,
-                'constraint' => $link->getConstraint()
-            );
+        // run over all packages and store matching ones
+        $this->output->writeln('<info>Scanning packages</info>');
+
+        $repositories = $composer->getRepositoryManager()->getRepositories();
+        $pool = new Pool('dev');
+        foreach ($repositories as $repository) {
+            $pool->addRepository($repository);
         }
 
-        /* Find packages and add them to the stack */
-        $this->writeln('<info>Scanning packages</info>');
-        foreach ($composer->getRepositoryManager()->getRepositories() as $repository) {
-            foreach ($repository->getPackages() as $package) {
+        if ($requireAll) {
+            $links = array();
+
+            foreach ($repositories as $repository) {
+                // collect links for composer repository with providers
+                if ($repository instanceof ComposerRepository && $repository->hasProviders()) {
+                    foreach ($repository->getProviderNames() as $name) {
+                        $links[] = new Link('__root__', $name, new MultiConstraint(array()), 'requires', '*');
+                    }
+                } else {
+                    // process other repos directly
+                    foreach ($repository->getPackages() as $package) {
+                        // skip aliases
+                        if ($package instanceof AliasPackage) {
+                            continue;
+                        }
+
+                        // add matching package if not yet selected
+                        if (!isset($selected[$package->getUniqueName()])) {
+                            if ($this->output->getVerbosity() == OutputInterface::VERBOSITY_VERBOSE) {
+                                $this->output->writeln('Selected '.$package->getPrettyName().' ('.$package->getPrettyVersion().')');
+                            }
+                            $selected[$package->getUniqueName()] = $package;
+                        }
+                    }
+                }
+            }
+        } else {
+            $links = array_values($composer->getPackage()->getRequires());
+        }
+
+        // process links if any
+        $dependencyLinks = array();
+
+        $i = 0;
+        while (isset($links[$i])) {
+            /** @var Link $link */
+            $link = $links[$i];
+            $i++;
+            $name = $link->getTarget();
+            $matches = $pool->whatProvides($name, $link->getConstraint());
+
+            foreach ($matches as $index => $package) {
                 // skip aliases
                 if ($package instanceof AliasPackage) {
-                    continue;
+                    $package = $package->getAliasOf();
                 }
-
-                $name = $package->getName();
 
                 // add matching package if not yet selected
                 if (!isset($selected[$package->getUniqueName()])) {
-                    if ($verbose) {
-                        $this->writeln('Selected '.$package->getPrettyName().' ('.$package->getPrettyVersion().')');
+                    if ($this->output->getVerbosity() == OutputInterface::VERBOSITY_VERBOSE) {
+                        $this->output->writeln(sprintf(
+                            'Selected %s (%s)',
+                            $package->getPrettyName(),
+                            $package->getPrettyVersion()
+                        ));
                     }
-                    $targets[$name]['matched'] = true;
                     $selected[$package->getUniqueName()] = $package;
+
+                    if (!$requireAll && $requireDependencies) {
+                        // append non-platform dependencies
+                        /** @var Link $dependencyLink */
+                        foreach ($package->getRequires() as $dependencyLink) {
+                            $target = $dependencyLink->getTarget();
+                            if (!preg_match(PlatformRepository::PLATFORM_PACKAGE_REGEX, $target)) {
+                                $linkId = $target.' '.$dependencyLink->getConstraint();
+                                // prevent loading multiple times the same link
+                                if (!isset($dependencyLinks[$linkId])) {
+                                    $links[] = $dependencyLink;
+                                    $dependencyLinks[$linkId] = true;
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        }
 
-        // check for unmatched requirements
-        foreach ($targets as $package => $target) {
-            if (!$target['matched']) {
-                $this->writeln('<error>The '.$target['link']->getTarget().' '.$target['link']->getPrettyConstraint().' requirement did not match any package</error>');
+            if (!$matches) {
+                $this->output->writeln(sprintf(
+                    '<error>The %s %s requirement did not match any package</error>',
+                    $name,
+                    $link->getPrettyConstraint()
+                ));
             }
         }
-        asort($selected, SORT_STRING);
+        ksort($selected, SORT_STRING);
 
         return $selected;
     }
@@ -301,7 +387,7 @@ class PrivateRepositoryBuilder
     protected function writeData(array $packages)
     {
         $repo = array('packages' => array());
-        $dumper = new ArrayDumper;
+        $dumper = new ArrayDumper();
 
         /* @var Package $package */
         foreach ($packages as $package) {
@@ -313,11 +399,10 @@ class PrivateRepositoryBuilder
                 $url = $this->removeCredentialsFromUrl($package->getSourceUrl());
                 $package->setSourceUrl($url);
             }
-
             $repo['packages'][$package->getPrettyName()][$package->getPrettyVersion()] = $dumper->dump($package);
         }
 
-        $this->writeln('<info>Writing ' . $this->outputFile . '</info>');
+        $this->writeLine('<info>Writing ' . $this->outputFile . '</info>');
         $repoJson = new JsonFile($this->outputFile);
         $repoJson->write($repo);
     }
@@ -328,7 +413,7 @@ class PrivateRepositoryBuilder
      * @param string|array $messages The message as an array of lines of a single string
      * @param integer      $type     The type of output (0: normal, 1: raw, 2: plain)
      */
-    protected function writeln($messages, $type = 0)
+    protected function writeLine($messages, $type = 0)
     {
         if (isset($this->output)) {
             return $this->output->writeln($messages, $type);
@@ -490,5 +575,4 @@ class PrivateRepositoryBuilder
 
         return $reference;
     }
-
 }

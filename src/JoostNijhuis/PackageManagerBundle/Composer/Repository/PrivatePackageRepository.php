@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Composer\Repository;
 
 use Composer\Package\Loader\ArrayLoader;
@@ -21,7 +19,6 @@ use Composer\Repository\InvalidRepositoryException;
  */
 class PrivatePackageRepository extends ArrayRepository
 {
-
     /**
      * @var array
      */
@@ -48,18 +45,20 @@ class PrivatePackageRepository extends ArrayRepository
         parent::initialize();
 
         $loader = new ValidatingArrayLoader(new ArrayLoader, false);
-        foreach ($this->data['packages'] as $packageName => $packageData) {
-            foreach ($packageData as $version => $data) {
-                try {
-                    $package = $loader->load($data);
-                } catch (\Exception $e) {
-                    throw new InvalidRepositoryException(sprintf(
-                        "A repository of type 'package' contains an invalid package definition: %s \n\nInvalid package definition: %s\n",
-                        $e->getMessage(),
-                        print_r($data)
-                    ));
+        if (isset($this->data['packages'])) {
+            foreach ($this->data['packages'] as $packageName => $packageData) {
+                foreach ($packageData as $version => $data) {
+                    try {
+                        $package = $loader->load($data);
+                    } catch (\Exception $e) {
+                        throw new InvalidRepositoryException(sprintf(
+                            "A repository of type 'package' contains an invalid package definition: %s \n\nInvalid package definition: %s\n",
+                            $e->getMessage(),
+                            print_r($data)
+                        ));
+                    }
+                    $this->addPackage($package);
                 }
-                $this->addPackage($package);
             }
         }
     }

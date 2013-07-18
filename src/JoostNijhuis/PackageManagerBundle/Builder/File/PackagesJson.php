@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Builder\File;
 
 use Symfony\Component\Filesystem\Filesystem;
@@ -23,7 +21,6 @@ use JoostNijhuis\PackageManagerBundle\Builder\Downloader\DownloaderInterface;
  */
 class PackagesJson extends JsonFile
 {
-
     /**
      * @var int
      */
@@ -51,19 +48,23 @@ class PackagesJson extends JsonFile
     {
         $this->parseMainData();
 
-        $providers = $this->data['provider-includes'];
-        $this->data['provider-includes'] = array(
-            'p/provider-active$%hash%.json' => $providers['p/provider-active$%hash%.json']
-        );
-        $this->getProviderIncludes();
-        $this->data['provider-includes'] = array_merge($providers, $this->data['provider-includes']);
+        if (isset($this->data['provider-includes'])) {
+            $providers = $this->data['provider-includes'];
+            $this->data['provider-includes'] = array(
+                'p/provider-active$%hash%.json' => $providers['p/provider-active$%hash%.json']
+            );
+            $this->getProviderIncludes();
+            $this->data['provider-includes'] = array_merge($providers, $this->data['provider-includes']);
+        }
 
-        $providers = $this->data['providers-includes'];
-        $this->data['providers-includes'] = array(
-            'p/providers-active.json' => $providers['p/providers-active.json']
-        );
-        $this->getProvidersIncludes();
-        $this->data['providers-includes'] = array_merge($providers, $this->data['providers-includes']);
+        if (isset($this->data['providers-includes'])) {
+            $providers = $this->data['providers-includes'];
+            $this->data['providers-includes'] = array(
+                'p/providers-active.json' => $providers['p/providers-active.json']
+            );
+            $this->getProvidersIncludes();
+            $this->data['providers-includes'] = array_merge($providers, $this->data['providers-includes']);
+        }
 
         $this->writeFileToDisc();
     }
@@ -115,27 +116,29 @@ class PackagesJson extends JsonFile
      */
     protected function getProvidersIncludes()
     {
-        foreach ($this->data['providers-includes'] as $fileName => $data) {
+        if (isset($this->data['providers-includes'])) {
+            foreach ($this->data['providers-includes'] as $fileName => $data) {
 
-            $shaMethod = current(array_keys($data));
-            $hash = array_shift($data);
+                $shaMethod = current(array_keys($data));
+                $hash = array_shift($data);
 
-            $providerContainer = new ProviderContainer(
-                $this->basePath . $fileName,
-                $this->basePath,
-                $shaMethod,
-                '',
-                $fileName,
-                $this->downloader
-            );
-            $providerContainer->setConfig($this->config);
-            $providerContainer->setOutputInterface($this->output);
-            $providerContainer->parse();
-
-            if ($providerContainer->getHash() != $hash) {
-                $this->data['providers-includes'][$fileName] = array(
-                    $shaMethod => $providerContainer->getHash()
+                $providerContainer = new ProviderContainer(
+                    $this->basePath . $fileName,
+                    $this->basePath,
+                    $shaMethod,
+                    '',
+                    $fileName,
+                    $this->downloader
                 );
+                $providerContainer->setConfig($this->config);
+                $providerContainer->setOutputInterface($this->output);
+                $providerContainer->parse();
+
+                if ($providerContainer->getHash() != $hash) {
+                    $this->data['providers-includes'][$fileName] = array(
+                        $shaMethod => $providerContainer->getHash()
+                    );
+                }
             }
         }
     }
@@ -145,29 +148,31 @@ class PackagesJson extends JsonFile
      */
     protected function getProviderIncludes()
     {
-        foreach ($this->data['provider-includes'] as $fileName => $data) {
+        if (isset($this->data['provider-includes'])) {
+            foreach ($this->data['provider-includes'] as $fileName => $data) {
 
-            $shaMethod = current(array_keys($data));
-            $hash = array_shift($data);
-            $oldFileName = $fileName;
-            $fileName = str_replace('%hash%', $hash, $fileName);
+                $shaMethod = current(array_keys($data));
+                $hash = array_shift($data);
+                $oldFileName = $fileName;
+                $fileName = str_replace('%hash%', $hash, $fileName);
 
-            $providerContainer = new ProviderContainer(
-                $this->basePath . $fileName,
-                $this->basePath,
-                $shaMethod,
-                $this->providersUrl,
-                $oldFileName,
-                $this->downloader
-            );
-            $providerContainer->setConfig($this->config);
-            $providerContainer->setOutputInterface($this->output);
-            $providerContainer->parse();
-
-            if ($providerContainer->getHash() != $hash) {
-                $this->data['provider-includes'][$oldFileName] = array(
-                    $shaMethod => $providerContainer->getHash()
+                $providerContainer = new ProviderContainer(
+                    $this->basePath . $fileName,
+                    $this->basePath,
+                    $shaMethod,
+                    $this->providersUrl,
+                    $oldFileName,
+                    $this->downloader
                 );
+                $providerContainer->setConfig($this->config);
+                $providerContainer->setOutputInterface($this->output);
+                $providerContainer->parse();
+
+                if ($providerContainer->getHash() != $hash) {
+                    $this->data['provider-includes'][$oldFileName] = array(
+                        $shaMethod => $providerContainer->getHash()
+                    );
+                }
             }
         }
     }
@@ -177,27 +182,29 @@ class PackagesJson extends JsonFile
      */
     protected function getIncludes()
     {
-        foreach ($this->data['includes'] as $fileName => $data) {
+        if (isset($this->data['includes'])) {
+            foreach ($this->data['includes'] as $fileName => $data) {
 
-            $shaMethod = current(array_keys($data));
-            $hash = array_shift($data);
+                $shaMethod = current(array_keys($data));
+                $hash = array_shift($data);
 
-            $packageContainer = new PackageContainer(
-                $this->basePath . $fileName,
-                $this->basePath,
-                $shaMethod,
-                '',
-                '',
-                $this->downloader
-            );
-            $packageContainer->setConfig($this->config);
-            $packageContainer->setOutputInterface($this->output);
-            $packageContainer->parse();
-
-            if ($packageContainer->getHash() != $hash) {
-                $this->data['includes'][$fileName] = array(
-                    $shaMethod => $packageContainer->getHash()
+                $packageContainer = new PackageContainer(
+                    $this->basePath . $fileName,
+                    $this->basePath,
+                    $shaMethod,
+                    '',
+                    '',
+                    $this->downloader
                 );
+                $packageContainer->setConfig($this->config);
+                $packageContainer->setOutputInterface($this->output);
+                $packageContainer->parse();
+
+                if ($packageContainer->getHash() != $hash) {
+                    $this->data['includes'][$fileName] = array(
+                        $shaMethod => $packageContainer->getHash()
+                    );
+                }
             }
         }
     }
@@ -212,5 +219,4 @@ class PackagesJson extends JsonFile
         file_put_contents($this->fileName, json_encode($this->data));
         $this->output->writeln('Main file saved to disc: ' . $this->fileName);
     }
-
 }

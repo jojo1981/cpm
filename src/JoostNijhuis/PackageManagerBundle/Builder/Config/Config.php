@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Builder\Config;
 
 use Symfony\Component\Filesystem\Filesystem;
@@ -18,7 +16,6 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class Config
 {
-
     /**
      * @var string
      */
@@ -181,7 +178,12 @@ class Config
      */
     public function getDownloadUrlPrefix()
     {
-        return $this->downloadUrlPrefix;
+        $schema = 'http://';
+        if (isset($_SERVER['HTTPS'])) {
+            $schema = 'https://';
+        }
+
+        return $schema . $_SERVER['HTTP_HOST'] . '/downloads/';
     }
 
     /**
@@ -231,6 +233,11 @@ class Config
      */
     public function setPrivatePackagesFile($privatePackagesFile)
     {
+        $fileSystem = new Filesystem();
+        if ($fileSystem->exists($privatePackagesFile) === false) {
+            $fileSystem->touch($privatePackagesFile);
+        }
+
         $privatePackagesFile = realpath($privatePackagesFile);
         $this->privatePackagesFile = str_replace(
             '/',
@@ -424,5 +431,4 @@ class Config
 
         return $retValue;
     }
-
 }

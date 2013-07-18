@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -19,7 +17,7 @@ use JoostNijhuis\PackageManagerBundle\Builder\RepositoryBuilder;
 /**
  * JoostNijhuis\PackageManagerBundle\Command\BuildPrivateRepositoryCommand
  *
- * Update Repostitory Command class
+ * Update Repository Command class
  * With this command the private packages part of the repository,
  * the packages who are not registered on packagist can be updated.
  * If there are any new versions in SVN or on GitHup etc... they will be
@@ -27,7 +25,6 @@ use JoostNijhuis\PackageManagerBundle\Builder\RepositoryBuilder;
  */
 class BuildPrivateRepositoryCommand extends ContainerAwareCommand
 {
-
     /**
      * {@inheritDoc}
      */
@@ -60,5 +57,4 @@ EOT
             $this->getHelperSet()
         );
     }
-
 }

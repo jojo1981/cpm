@@ -75,33 +75,35 @@ class ProviderContainer extends JsonFile
      */
     protected function parseProviders()
     {
-        foreach ($this->data['providers'] as $fileName => $data) {
-            $oldFileName = $fileName;
-            $shaMethod = current(array_keys($data));
-            $hash = array_shift($data);
-            if (empty($this->providersUrl) === false) {
-                $fileName = str_replace(
-                    array('%package%', '%hash%', '/'),
-                    array($fileName, $hash, DIRECTORY_SEPARATOR),
-                    $this->providersUrl
+        if (isset($this->data['providers'])) {
+            foreach ($this->data['providers'] as $fileName => $data) {
+                $oldFileName = $fileName;
+                $shaMethod = current(array_keys($data));
+                $hash = array_shift($data);
+                if (empty($this->providersUrl) === false) {
+                    $fileName = str_replace(
+                        array('%package%', '%hash%', '/'),
+                        array($fileName, $hash, DIRECTORY_SEPARATOR),
+                        $this->providersUrl
+                    );
+                }
+                $packageContainer = new PackageContainer(
+                    $this->basePath . $fileName,
+                    $this->basePath,
+                    $shaMethod,
+                    $this->providersUrl,
+                    $oldFileName,
+                    $this->downloader
                 );
-            }
-            $packageContainer = new PackageContainer(
-                $this->basePath . $fileName,
-                $this->basePath,
-                $shaMethod,
-                $this->providersUrl,
-                $oldFileName,
-                $this->downloader
-            );
-            $packageContainer->setConfig($this->config);
-            $packageContainer->setOutputInterface($this->output);
-            $packageContainer->parse();
+                $packageContainer->setConfig($this->config);
+                $packageContainer->setOutputInterface($this->output);
+                $packageContainer->parse();
 
-            if ($packageContainer->getHash() != $hash) {
-                $this->data['providers'][$oldFileName] = array(
-                    $shaMethod => $packageContainer->getHash()
-                );
+                if ($packageContainer->getHash() != $hash) {
+                    $this->data['providers'][$oldFileName] = array(
+                        $shaMethod => $packageContainer->getHash()
+                    );
+                }
             }
         }
     }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -31,12 +29,16 @@ use JoostNijhuis\PackageManagerBundle\Packages\DownloadHandler;
  */
 class DownloadsController extends Controller
 {
-    
     /**
      * @Route("/downloads/{vendor}/{package}/{file}")
      */
     public function indexAction(Request $request, $vendor, $package, $file)
     {
+        $tmpDir = $this->container->getParameter(
+            'joost_nijhuis_package_manager.tmp_dir'
+        );
+        apache_setenv("HOME", $tmpDir);
+
         $version  = pathinfo($file, PATHINFO_FILENAME);
         $search   = $vendor . '/' . $package;
 
@@ -111,5 +113,4 @@ class DownloadsController extends Controller
 
         return $response;
     }
-
 }

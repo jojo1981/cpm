@@ -20,7 +20,7 @@
             </trans-unit>
             <trans-unit id="f.language_switcher.choose.language">
                 <source>f.language_switcher.choose.language</source>
-                <target><![CDATA[Sprache w&auml;hlen:]]></target>
+                <target>Sprache wählen:</target>
             </trans-unit>
             <trans-unit id="f.title_code_block">
                 <source>f.title_code_block</source>

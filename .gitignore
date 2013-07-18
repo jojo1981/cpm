@@ -10,4 +10,5 @@
 /app/config/repository_config.json
 /composer.phar
 /web/.htaccess
+/web/bundles/*
 /app/bootstrap*

@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Twig\Extension;
 
 use JoostNijhuis\PackageManagerBundle\Twig\LanguageSwitcher;
@@ -21,7 +19,6 @@ use JoostNijhuis\PackageManagerBundle\Twig\LanguageSwitcher;
  */
 class PackageManagerTwigExtension extends \Twig_Extension_Core
 {
-
     /**
      * @var LanguageSwitcher
      */
@@ -169,5 +166,4 @@ class PackageManagerTwigExtension extends \Twig_Extension_Core
     {
         return $this->languageSwitcher->getLanguageSwitcher();
     }
-
 }

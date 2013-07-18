@@ -162,7 +162,6 @@ abstract class JsonFile
     {
         $prefixDownloadUri = $this->config->getDownloadUrlPrefix();
         if (isset($this->data['packages'])) {
-            $versionParser = new VersionParser();
             foreach ($this->data['packages'] as $packageName => $packageData) {
                 foreach ($packageData as $version => $data) {
                     if ($this->config->getParse() && isset($this->data['packages'])) {
@@ -177,10 +176,6 @@ abstract class JsonFile
                                 'shasum'    => '',
                                 'url'       => $prefixDownloadUri . $packageName . '/' . $version . '.zip'
                             );
-
-                            if (isset($data['source'])) {
-                                unset($data['source']);
-                            }
                         }
                     }
 

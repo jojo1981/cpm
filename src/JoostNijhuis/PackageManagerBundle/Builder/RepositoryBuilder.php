@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Builder;
 
 use Symfony\Bridge\Monolog\Logger;
@@ -26,7 +24,6 @@ use JoostNijhuis\PackageManagerBundle\Builder\PrivateRepositoryBuilder;
  */
 class RepositoryBuilder
 {
-
     /**
      * @var Config
      */
@@ -93,28 +90,31 @@ class RepositoryBuilder
      *
      * @param OutputInterface $output
      * @param InputInterface $input
-     * @param HelperSet $helperSet
+     * @param null|HelperSet $helperSet [optional]
+     * @param bool $onlyBuildRawPrivatePackagesFile [optional]
      */
     public function buildPrivateRepository(
         OutputInterface $output,
         InputInterface $input,
-        HelperSet $helperSet
+        HelperSet $helperSet = null,
+        $onlyBuildRawPrivatePackagesFile = false
     ) {
         $this->builder->setOutputInterface($output);
         $this->builder->setInputInterface($input);
         $this->builder->setHelperSet($helperSet);
         $this->builder->buildRepository();
 
-        $fileName = implode(DIRECTORY_SEPARATOR, array(
-            $this->config->getIndexPath(),
-            'packages.json'
-        ));
+        if ($onlyBuildRawPrivatePackagesFile === false) {
+            $fileName = implode(DIRECTORY_SEPARATOR, array(
+                $this->config->getIndexPath(),
+                'packages.json'
+            ));
 
-        /* Build, attach private packages and parse whole index */
-        $packagesJson = new PackagesJson($fileName, $this->downloader);
-        $packagesJson->setConfig($this->config);
-        $packagesJson->setOutputInterface($output);
-        $packagesJson->attachPrivatePackages();
+            /* Build, attach private packages and parse whole index */
+            $packagesJson = new PackagesJson($fileName, $this->downloader);
+            $packagesJson->setConfig($this->config);
+            $packagesJson->setOutputInterface($output);
+            $packagesJson->attachPrivatePackages();
+        }
     }
-
 }

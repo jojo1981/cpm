@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,10 +7,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Packages;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ObjectManager;
 
 /**
  * JoostNijhuis\PackageManagerBundle\Packages\SvnAuthentication
@@ -22,11 +20,10 @@ use Doctrine\ORM\EntityManager;
  */
 class SvnAuthentication
 {
-
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var ObjectManager
      */
-    protected $em;
+    protected $om;
 
     /**
      * @var \Doctrine\ORM\EntityRepository
@@ -41,12 +38,12 @@ class SvnAuthentication
     /**
      * Constructor
      *
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param ObjectManager $om
      */
-    public function __construct(EntityManager $em)
+    public function __construct(ObjectManager $om)
     {
-        $this->em = $em;
-        $this->repository = $this->em->getRepository(
+        $this->om = $om;
+        $this->repository = $this->om->getRepository(
             'JoostNijhuis\PackageManagerBundle\Entity\SvnAuthentication'
         );
     }
@@ -124,5 +121,4 @@ class SvnAuthentication
         /* Not closest match found */
         return false;
     }
-
 }

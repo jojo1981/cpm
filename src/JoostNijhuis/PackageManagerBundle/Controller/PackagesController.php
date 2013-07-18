@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -26,7 +24,6 @@ use JoostNijhuis\PackageManagerBundle\Builder\File\PackageContainer;
  */
 class PackagesController extends Controller
 {
-
     /**
      * @Route("/{directory1}/{directory2}/{file}.json")
      * @Route("/{directory1}/{file}.json")
@@ -76,7 +73,9 @@ class PackagesController extends Controller
             $indexDir = $config->getIndexPath();
             $indexDir = realpath($indexDir) . DIRECTORY_SEPARATOR;
             $fileName = $indexDir . $file;
-            $content = file_get_contents($fileName);
+            if (file_exists($fileName)) {
+                $content = file_get_contents($fileName);
+            }
         }
 
         $response = false;
@@ -93,5 +92,4 @@ class PackagesController extends Controller
 
         return $response;
     }
-
 }

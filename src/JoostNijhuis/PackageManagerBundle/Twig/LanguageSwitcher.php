@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the Composer Package Manager.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace JoostNijhuis\PackageManagerBundle\Twig;
 
 use Symfony\Component\DependencyInjection\ContainerAware;
@@ -27,7 +25,6 @@ use Symfony\Component\Form\FormBuilder;
  */
 class LanguageSwitcher extends ContainerAware
 {
-
     /**
      * Generate a language selection form and retrieve the
      * rendered view as a string or as a response object
@@ -39,7 +36,7 @@ class LanguageSwitcher extends ContainerAware
     {
         $request = $this->getRequest();
         
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $languagesRepository = $em->getRepository('JoostNijhuis\PackageManagerBundle\Entity\Language');
         $arrLanguages = $languagesRepository->getForSelectBox();
         
@@ -153,5 +150,4 @@ class LanguageSwitcher extends ContainerAware
     {
         return $this->container->get('translator');
     }
-
 }
