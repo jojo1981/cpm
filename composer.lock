@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "2dcad767098a35f04877aec144616203",
+    "hash": "a228e3cd7f9f708ecb61382692cbbcea",
     "packages": [
         {
             "name": "composer/composer",
@@ -806,12 +806,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kriswallsmith/assetic.git",
-                "reference": "41930af87d8182c3298cf66f49a1606fa3c1d367"
+                "reference": "v1.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/41930af87d8182c3298cf66f49a1606fa3c1d367",
-                "reference": "41930af87d8182c3298cf66f49a1606fa3c1d367",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/v1.1.2",
+                "reference": "v1.1.2",
                 "shasum": ""
             },
             "require": {
@@ -869,7 +869,7 @@
                 "compression",
                 "minification"
             ],
-            "time": "2013-07-11 15:46:25"
+            "time": "2013-07-19 00:03:27"
         },
         {
             "name": "monolog/monolog",
@@ -1384,12 +1384,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/SwiftmailerBundle.git",
-                "reference": "v2.3.2"
+                "reference": "69d6c368fc743668a2900a3ea859763719275b82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/SwiftmailerBundle/zipball/v2.3.2",
-                "reference": "v2.3.2",
+                "url": "https://api.github.com/repos/symfony/SwiftmailerBundle/zipball/69d6c368fc743668a2900a3ea859763719275b82",
+                "reference": "69d6c368fc743668a2900a3ea859763719275b82",
                 "shasum": ""
             },
             "require": {
@@ -1430,7 +1430,7 @@
             ],
             "description": "Symfony SwiftmailerBundle",
             "homepage": "http://symfony.com",
-            "time": "2013-05-15 08:38:58"
+            "time": "2013-07-19 08:28:25"
         },
         {
             "name": "symfony/symfony",
@@ -1438,12 +1438,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "40f7e6875fdf15cddebdd21a7be791023c6a0255"
+                "reference": "1efb0f00ffaef5f0157e80f409af239b9246f629"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/40f7e6875fdf15cddebdd21a7be791023c6a0255",
-                "reference": "40f7e6875fdf15cddebdd21a7be791023c6a0255",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/1efb0f00ffaef5f0157e80f409af239b9246f629",
+                "reference": "1efb0f00ffaef5f0157e80f409af239b9246f629",
                 "shasum": ""
             },
             "require": {
@@ -1538,7 +1538,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2013-07-17 08:47:37"
+            "time": "2013-07-19 10:20:37"
         },
         {
             "name": "twig/extensions",
