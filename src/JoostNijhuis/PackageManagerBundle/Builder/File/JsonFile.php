@@ -161,6 +161,7 @@ abstract class JsonFile
     protected function parsePackages()
     {
         $prefixDownloadUri = $this->config->getDownloadUrlPrefix();
+
         if (isset($this->data['packages'])) {
             foreach ($this->data['packages'] as $packageName => $packageData) {
                 foreach ($packageData as $version => $data) {

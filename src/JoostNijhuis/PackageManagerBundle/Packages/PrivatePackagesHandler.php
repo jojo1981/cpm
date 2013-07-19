@@ -9,6 +9,8 @@
  */
 namespace JoostNijhuis\PackageManagerBundle\Packages;
 
+use Composer\Package\Version\VersionParser;
+
 /**
  * JoostNijhuis\PackageManagerBundle\Packages\PrivatePackagesHandler
  *
@@ -100,8 +102,10 @@ class PrivatePackagesHandler
         foreach ($packageData as $version => $data) {
             if (isset($data['authors'])) {
                 foreach ($data['authors'] as $author) {
-                    $key = str_replace(' ', '_', strtolower(
-                        implode('_', array_values($author)))
+                    $key = str_replace(
+                        ' ',
+                        '_',
+                        strtolower(implode('_', array_values($author)))
                     );
                     $a = array(
                         'name'     => '',
@@ -130,10 +134,22 @@ class PrivatePackagesHandler
                 $urlData = $data['source'];
             }
 
-            if ($urlData['type'] == 'svn') {
-                $url = $urlData['url'] . $urlData['reference'];
-            } else {
-                $url = $urlData['url'];
+            switch ($urlData['type']) {
+                case 'svn':
+                    $url = $urlData['url'] . $urlData['reference'];
+                    break;
+                case 'git':
+                    if (isset($data['dist']) === false
+                        && VersionParser::parseStability($version) == 'stable'
+                    ) {
+                        $url = $urlData['url'] . '/tree/' . $urlData['reference'];
+                    } else {
+                        $url = $urlData['url'];
+                    }
+                    break;
+                default:
+                    $url = $urlData['url'];
+                    break;
             }
 
             $parts = parse_url($url);
