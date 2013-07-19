@@ -9,10 +9,11 @@
  */
 namespace JoostNijhuis\PackageManagerBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Composer\Factory;
 use Composer\IO\NullIO;
 use Composer\Repository\CompositeRepository;
@@ -110,6 +111,11 @@ class DownloadsController extends Controller
                 $request->getRequestUri() . ' Not found'
             );
         }
+
+        /* Cleanup tmp directory */
+        $fs = new Filesystem();
+        $fs->remove($tmpDir);
+        $fs->mkdir($tmpDir);
 
         return $response;
     }
