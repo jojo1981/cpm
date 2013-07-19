@@ -17,9 +17,9 @@ use Symfony\Component\Filesystem\Filesystem;
 class Config
 {
     /**
-     * @var string
+     * @var null|string
      */
-    protected $downloadUrlPrefix = 'http://packages.sqills.com/downloads/';
+    protected $downloadUrlPrefix;
 
     /**
      * @var bool
@@ -178,6 +178,10 @@ class Config
      */
     public function getDownloadUrlPrefix()
     {
+        if (!empty($this->downloadUrlPrefix)) {
+            return $this->downloadUrlPrefix;
+        }
+
         $schema = 'http://';
         if (isset($_SERVER['HTTPS'])) {
             $schema = 'https://';
