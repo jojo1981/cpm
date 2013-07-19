@@ -19,7 +19,7 @@ class Config
     /**
      * @var null|string
      */
-    protected $downloadUrlPrefix;
+    protected $downloadUrlPrefix = 'http://www.example.com/downloads/';
 
     /**
      * @var bool
@@ -112,6 +112,9 @@ class Config
                 case 'packagist_url':
                     $this->setBaseUrl($value);
                     break;
+                case 'download_url_prefix':
+                    $this->setDownloadUrlPrefix($value);
+                    break;
                 case 'private_packages_config_file':
                     $this->setPrivatePackagesConfigFile($value);
                     break;
@@ -178,16 +181,7 @@ class Config
      */
     public function getDownloadUrlPrefix()
     {
-        if (!empty($this->downloadUrlPrefix)) {
-            return $this->downloadUrlPrefix;
-        }
-
-        $schema = 'http://';
-        if (isset($_SERVER['HTTPS'])) {
-            $schema = 'https://';
-        }
-
-        return $schema . $_SERVER['HTTP_HOST'] . '/downloads/';
+        return $this->downloadUrlPrefix;
     }
 
     /**

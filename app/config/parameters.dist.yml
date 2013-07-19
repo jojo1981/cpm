@@ -21,6 +21,7 @@ parameters:
     parse_packages:               true
     attach_private_packages:      true
     packagist_url:                "http://packagist.org"
+    download_url_prefix:          "http://www.example.com/downloads/"
     private_packages_config_file: %kernel.root_dir%/config/repository_config.json
     private_packages_output_file: %kernel.root_dir%/../data/private_packages.json
     private_packages_data_dir:    %kernel.root_dir%/../data/packages

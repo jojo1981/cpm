@@ -66,6 +66,7 @@ joost_nijhuis_package_manager:
     parse_packages:               %parse_packages%
     attach_private_packages:      %attach_private_packages%
     packagist_url:                %packagist_url%
+    download_url_prefix:          %download_url_prefix%
     private_packages_config_file: %private_packages_config_file%
     private_packages_output_file: %private_packages_output_file%
     private_packages_data_dir:    %private_packages_data_dir%
