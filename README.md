@@ -118,6 +118,10 @@ Make sure the Apache vhost configuration has the option: `AllowOverride All` in 
 
     php bin/build_bootstrap
 
+or
+
+    php ./vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php
+
 ### 1.9 Setup database
 
 1.9.1 Setup database connection
@@ -135,7 +139,13 @@ Change the database settings:
         
 The ~ means use default MySQL port (3306), you can set a different port if your database server is listening to a different port.
 
-1.9.2 Build database
+1.9.2 Install assets
+
+Run the following command to install all assets:
+
+    php ./app/console assets:install --env=prod
+
+1.9.3 Build database
 
 Run the following command to generate the database structure:
 
