@@ -15,19 +15,21 @@ This project requires ICU / INTL v.49 this is not installed by default.
 2. To install for Mac OSX
 ===========
 
-1. Make sure you have XCode installed including the command line tools
+1. Make sure you have [XCode](https://developer.apple.com/xcode) installed including the command line tools
+
 2. Download ICU4C (v49) source http://download.icu-project.org/files/icu4c/49.1.2/icu4c-49_1_2-src.tgz
+
 3. Extract this archive:
 
-    tar -xvzf icu4c-49_1_2-src.tgz
+        tar -xvzf icu4c-49_1_2-src.tgz
 
 4. Configure and compile and install the ICU package
 
-    cd icu/source
-    chmod +x runConfigureICU configure install-sh
-    ./runConfigureICU MacOSX --with-library-bits=32
-    make
-    sudo make install
+        cd icu/source
+        chmod +x runConfigureICU configure install-sh
+        ./runConfigureICU MacOSX --with-library-bits=32
+        make
+        sudo make install
 
 5. Compile the PHP Intl module
 
@@ -41,14 +43,15 @@ Compile intl
 
     sudo CFLAGS="-arch i386" pecl install intl
 
-(warning) When asked for the header files specify: "/usr/local"
+`When asked for the header files specify: "/usr/local"`
 
 3. To install for Mac OSX
 ===========
 
 To install on Linux
 
-    # g++ compiler etc.
+g++ compiler etc.
+
     apt-get install build-essential autoconf
     cd /tmp
     wget http://download.icu-project.org/files/icu4c/49.1.2/icu4c-49_1_2-src.tgz
@@ -58,5 +61,8 @@ To install on Linux
     make
     make install
     /usr/local/zend/bin/pecl install intl
-    # icu library files are located at: /usr/local
+    /etc/init.d/apache2 restart
+    
+`When asked for the header files specify: "/usr/local"`
+
     /etc/init.d/apache2 restart
