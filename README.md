@@ -20,6 +20,9 @@ http://git-scm.com
 
 SVN client application should be installed
 
+ICU / INTL v.49 must be installed, this is not installed by default.
+https://github.com/jojo1981/cpm/master/INSTALL_ICU_INTL
+
 ### 1.2 Download the application
 
 Get from GitHup: https://github.com/jojo1981/cpm.git
