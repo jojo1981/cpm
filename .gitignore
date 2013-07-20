@@ -4,6 +4,7 @@
 /.project
 /app/cache/*
 /app/logs/*
+/app/tmp/*
 /vendor/*
 /data/*
 /app/config/parameters.yml
