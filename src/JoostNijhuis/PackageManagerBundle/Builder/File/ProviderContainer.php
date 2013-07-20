@@ -138,8 +138,8 @@ class ProviderContainer extends JsonFile
      */
     protected function attachPrivatePackages()
     {
-        if ($this->oldFileName == 'p/providers-active.json'
-            || $this->oldFileName == 'p/provider-active$%hash%.json'
+        if ($this->oldFileName == 'p/providers-latest.json'
+            || $this->oldFileName == 'p/provider-latest$%hash%.json'
         ) {
             if ($this->config->getAttachPrivatePackages() === true) {
 

@@ -51,7 +51,7 @@ class PackagesJson extends JsonFile
         if (isset($this->data['provider-includes'])) {
             $providers = $this->data['provider-includes'];
             $this->data['provider-includes'] = array(
-                'p/provider-active$%hash%.json' => $providers['p/provider-active$%hash%.json']
+                'p/provider-latest$%hash%.json' => $providers['p/provider-latest$%hash%.json']
             );
             $this->getProviderIncludes();
             $this->data['provider-includes'] = array_merge($providers, $this->data['provider-includes']);
@@ -60,7 +60,7 @@ class PackagesJson extends JsonFile
         if (isset($this->data['providers-includes'])) {
             $providers = $this->data['providers-includes'];
             $this->data['providers-includes'] = array(
-                'p/providers-active.json' => $providers['p/providers-active.json']
+                'p/providers-latest.json' => $providers['p/provider-latest.json']
             );
             $this->getProvidersIncludes();
             $this->data['providers-includes'] = array_merge($providers, $this->data['providers-includes']);
