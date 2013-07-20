@@ -20,6 +20,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Language
 {
     /**
+     * @var string
+     *
      * @ORM\Id
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -27,27 +29,35 @@ class Language
     protected $id;
     
     /**
+     * @var string
+     *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     protected $name;
     
     /**
+     * @var string
+     *
      * @ORM\Column(name="code", type="string", length=2, nullable=false)
      */
     protected $code;
     
     /**
+     * @var bool
+     *
      * @ORM\Column(name="active", type="boolean", nullable=false)
      */
     protected $active = 0;
     
     /**
+     * @var int
+     *
      * @ORM\Column(name="sort_order", type="integer", nullable=false)
      */
     protected $sortOrder;
 
     /**
-     * Get id
+     * Get language id
      *
      * @return integer 
      */
@@ -57,7 +67,7 @@ class Language
     }
 
     /**
-     * Set name
+     * Set language name
      *
      * @param string $name
      * @return Language
@@ -70,7 +80,7 @@ class Language
     }
 
     /**
-     * Get name
+     * Get language name
      *
      * @return string 
      */
@@ -80,9 +90,9 @@ class Language
     }
 
     /**
-     * Set code
+     * Set language code
      *
-     * @param integer $code
+     * @param string $code
      * @return Language
      */
     public function setCode($code)
@@ -93,9 +103,9 @@ class Language
     }
 
     /**
-     * Get code
+     * Get language code
      *
-     * @return integer 
+     * @return string
      */
     public function getCode()
     {
@@ -103,9 +113,9 @@ class Language
     }
 
     /**
-     * Set active
+     * Set language active
      *
-     * @param integer $active
+     * @param bool $active
      * @return Language
      */
     public function setActive($active)
@@ -116,9 +126,9 @@ class Language
     }
 
     /**
-     * Get active
+     * Get language active
      *
-     * @return integer 
+     * @return bool
      */
     public function getActive()
     {
@@ -126,32 +136,9 @@ class Language
     }
 
     /**
-     * Set order
+     * Set language sort order
      *
-     * @param integer $order
-     * @return Language
-     */
-    public function setOrder($order)
-    {
-        $this->order = $order;
-    
-        return $this;
-    }
-
-    /**
-     * Get order
-     *
-     * @return integer 
-     */
-    public function getOrder()
-    {
-        return $this->order;
-    }
-
-    /**
-     * Set sort order
-     *
-     * @param integer $sortOrder
+     * @param int $sortOrder
      * @return Language
      */
     public function setSortOrder($sortOrder)
@@ -162,9 +149,9 @@ class Language
     }
 
     /**
-     * Get sort order
+     * Get language sort order
      *
-     * @return integer 
+     * @return int
      */
     public function getSortOrder()
     {

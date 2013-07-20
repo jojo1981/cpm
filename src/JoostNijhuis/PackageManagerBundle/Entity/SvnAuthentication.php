@@ -20,6 +20,8 @@ use Doctrine\ORM\Mapping as ORM;
 class SvnAuthentication
 {
     /**
+     * @var int
+     *
      * @ORM\Id
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -27,24 +29,30 @@ class SvnAuthentication
     private $id;
 
     /**
+     * @var string
+     *
      * @ORM\Column(name="url", type="string", length=255, unique=true, nullable=false)
      */
     private $url;
 
     /**
+     * @var string
+     *
      * @ORM\Column(name="username", type="string", length=255, nullable=false)
      */
     private $username;
 
     /**
+     * @var string
+     *
      * @ORM\Column(name="password", type="string", length=255, nullable=false)
      */
     private $password;
 
     /**
-     * Get id
+     * Get svn authentication id
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
