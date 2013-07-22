@@ -310,14 +310,27 @@ abstract class PackageVersion implements PackageVersionInterface
     protected $uid;
 
     /**
+     * List of authors  that contributed to the package. This  is typically the
+     * main maintainers, not the full list.
+     *
      * @var ArrayCollection
      */
     protected $authors;
 
     /**
+     * The package this package version belongs to.
+     *
      * @var PackageInterface
      */
     protected $package;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->authors = new ArrayCollection();
+    }
 
     /**
      * {@inheritDoc}

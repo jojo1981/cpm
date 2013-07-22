@@ -64,6 +64,14 @@ abstract class Author implements AuthorInterface
     protected $packageVersions;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->packageVersions = new ArrayCollection();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getId()
