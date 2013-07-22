@@ -251,7 +251,7 @@ interface PackageVersionInterface
     /**
      * Set prefer stable.
      *
-     * @param boolean $preferStable
+     * @param bool $preferStable
      * @return PackageVersionInterface
      */
     public function setPreferStable($preferStable);
@@ -259,7 +259,7 @@ interface PackageVersionInterface
     /**
      * Get prefer stable.
      *
-     * @return boolean
+     * @return bool
      */
     public function getPreferStable();
 

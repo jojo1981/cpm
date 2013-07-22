@@ -39,6 +39,14 @@ abstract class Vendor implements VendorInterface
     protected $packages;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->packages = new ArrayCollection();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getId()

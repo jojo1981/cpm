@@ -215,9 +215,9 @@ abstract class PackageVersion implements PackageVersionInterface
      * possible, even if the minimum-stability allows unstable packages.
      *
      * @var bool
-     * @ORM\Column(name="prefer_stable", type="boolean", nullable=false, default=false)
+     * @ORM\Column(name="prefer_stable", type="boolean", nullable=false)
      */
-    protected $preferStable;
+    protected $preferStable = false;
 
     /**
      * A set  of files that  should be treated  as binaries and  symlinked into
