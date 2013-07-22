@@ -10,6 +10,7 @@
 namespace JoostNijhuis\PackageManagerBundle\Model;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * JoostNijhuis\PackageManagerBundle\Model\Package
@@ -18,7 +19,6 @@ abstract class Package implements PackageInterface
 {
     /**
      * @var int
-     *
      * @ORM\Id
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -27,7 +27,6 @@ abstract class Package implements PackageInterface
 
     /**
      * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     protected $name;
@@ -41,6 +40,11 @@ abstract class Package implements PackageInterface
      * @var VendorInterface
      */
     protected $vendor;
+
+    /**
+     * @var ArrayCollection
+     */
+    protected $packageVersions;
 
     /**
      * {@inheritDoc}
@@ -102,5 +106,83 @@ abstract class Package implements PackageInterface
     public function getVendor()
     {
         return $this->vendor;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setPackageVersions(ArrayCollection $packageVersions)
+    {
+        $this->packageVersions = $packageVersions;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPackageVersions()
+    {
+        return $this->packageVersions;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removePackageVersion(PackageVersionInterface $packageVersion)
+    {
+        $this->packageVersions->removeElement($packageVersion);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removePackageVersionByVersion($version)
+    {
+        /** @var PackageVersionInterface $packageVersion$package */
+        foreach ($this->packageVersions as $packageVersion) {
+            if ($packageVersion->getVersion() == $version) {
+                $this->packageVersions->removeElement($packageVersion);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function hasPackageVersion(PackageVersionInterface $packageVersion)
+    {
+        /** @var PackageVersionInterface $objPackageVersion */
+        foreach ($this->packageVersions as $objPackageVersion) {
+            if ($objPackageVersion->getId() == $packageVersion->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removePackageVersions()
+    {
+        $this->packageVersions->clear();
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addPackageVersion(PackageVersionInterface $packageVersion)
+    {
+        $this->packageVersions->add($packageVersion);
+
+        return $this;
     }
 }

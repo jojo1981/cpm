@@ -153,7 +153,7 @@ abstract class Author implements AuthorInterface
     /**
      * {@inheritDoc}
      */
-    public function setPackageVersions($packageVersions)
+    public function setPackageVersions(ArrayCollection $packageVersions)
     {
         $this->packageVersions = $packageVersions;
 
@@ -181,11 +181,11 @@ abstract class Author implements AuthorInterface
     /**
      * {@inheritDoc}
      */
-    public function removePackageVersionByName($name)
+    public function removePackageVersionByVersion($version)
     {
-        /** @var Package $package */
+        /** @var PackageVersionInterface $packageVersion$package */
         foreach ($this->packageVersions as $packageVersion) {
-            if ($packageVersion->getName() == $name) {
+            if ($packageVersion->getVersion() == $version) {
                 $this->packageVersions->removeElement($packageVersion);
             }
         }
@@ -223,7 +223,7 @@ abstract class Author implements AuthorInterface
      */
     public function addPackageVersion(PackageVersionInterface $packageVersion)
     {
-        $this->packages->add($packageVersion);
+        $this->packageVersions->add($packageVersion);
 
         return $this;
     }

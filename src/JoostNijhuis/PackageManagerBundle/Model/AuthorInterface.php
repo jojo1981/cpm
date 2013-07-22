@@ -109,10 +109,10 @@ interface AuthorInterface
     /**
      * Remove package version by name from the list of package versions.
      *
-     * @param string $name
+     * @param string $version
      * @return AuthorInterface
      */
-    public function removePackageVersionByName($name);
+    public function removePackageVersionByVersion($version);
 
     /**
      * Check if package version is attached to this author.
