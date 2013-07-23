@@ -59,7 +59,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * A tag/keyword that this package relates to.
      *
      * @var array
-     * @ORM\Column(name="keywords", type="Array", nullable=true)
+     * @ORM\Column(name="keywords", type="array", nullable=true)
      */
     protected $keywords;
 
@@ -92,7 +92,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * Package release date, in 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS' format.
      *
      * @var \DateTime
-     * @ORM\Column(name="description", type="DateTime", nullable=true)
+     * @ORM\Column(name="time", type="datetime", nullable=true)
      */
     protected $time;
 
@@ -100,7 +100,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * Array of license names.
      *
      * @var array
-     * @ORM\Column(name="licenses", type="Array", nullable=true)
+     * @ORM\Column(name="licenses", type="array", nullable=true)
      */
     protected $licenses;
 
@@ -109,7 +109,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * that are required to run this package.
      *
      * @var array
-     * @ORM\Column(name="requires", type="Array", nullable=true)
+     * @ORM\Column(name="requires", type="array", nullable=true)
      */
     protected $requires;
 
@@ -118,7 +118,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * that can be replaced by this package.
      *
      * @var array
-     * @ORM\Column(name="replaces", type="Array", nullable=true)
+     * @ORM\Column(name="replaces", type="array", nullable=true)
      */
     protected $replaces;
 
@@ -127,7 +127,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * that conflict with this package.
      *
      * @var array
-     * @ORM\Column(name="conflicts", type="Array", nullable=true)
+     * @ORM\Column(name="conflicts", type="array", nullable=true)
      */
     protected $conflicts;
 
@@ -136,7 +136,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * that this package provides in addition to this package's name.
      *
      * @var array
-     * @ORM\Column(name="provides", type="Array", nullable=true)
+     * @ORM\Column(name="provides", type="array", nullable=true)
      */
     protected $provides;
 
@@ -145,7 +145,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * that this package requires for developing it (testing tools and such).
      *
      * @var array
-     * @ORM\Column(name="require_dev_packages", type="Array", nullable=true)
+     * @ORM\Column(name="require_dev_packages", type="array", nullable=true)
      */
     protected $requireDevelopmentPackages;
 
@@ -155,7 +155,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * user during installation).
      *
      * @var array
-     * @ORM\Column(name="suggest", type="Array", nullable=true)
+     * @ORM\Column(name="suggest", type="array", nullable=true)
      */
     protected $suggest;
 
@@ -163,7 +163,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * Composer options.
      *
      * @var array
-     * @ORM\Column(name="config", type="Array", nullable=true)
+     * @ORM\Column(name="config", type="array", nullable=true)
      */
     protected $config;
 
@@ -173,7 +173,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * installer class name.
      *
      * @var array
-     * @ORM\Column(name="extra", type="Array", nullable=true)
+     * @ORM\Column(name="extra", type="array", nullable=true)
      */
     protected $extra;
 
@@ -181,7 +181,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * Description of how the package can be auto-loaded.
      *
      * @var array
-     * @ORM\Column(name="autoload", type="Array", nullable=true)
+     * @ORM\Column(name="autoload", type="array", nullable=true)
      */
     protected $autoLoad;
 
@@ -189,7 +189,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * Options for creating package archives for distribution.
      *
      * @var array
-     * @ORM\Column(name="archive", type="Array", nullable=true)
+     * @ORM\Column(name="archive", type="array", nullable=true)
      */
     protected $archive;
 
@@ -197,7 +197,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * A set of additional repositories where packages can be found.
      *
      * @var array
-     * @ORM\Column(name="repositories", type="Array", nullable=true)
+     * @ORM\Column(name="repositories", type="array", nullable=true)
      */
     protected $repositories;
 
@@ -206,7 +206,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * Possible values are: dev, alpha, beta, RC, stable.
      *
      * @var string
-     * @ORM\Column(name="type", type="string", length=255, nullable=true)
+     * @ORM\Column(name="minimum_stability", type="string", length=255, nullable=true)
      */
     protected $minimumStability;
 
@@ -224,7 +224,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * bin-dir (from config).
      *
      * @var array
-     * @ORM\Column(name="bin", type="Array", nullable=true)
+     * @ORM\Column(name="bin", type="array", nullable=true)
      */
     protected $bin;
 
@@ -234,7 +234,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * preferably use autoloading.
      *
      * @var array
-     * @ORM\Column(name="include_paths", type="Array", nullable=true)
+     * @ORM\Column(name="include_paths", type="array", nullable=true)
      */
     protected $includePaths;
 
@@ -242,7 +242,7 @@ abstract class PackageVersion implements PackageVersionInterface
      * Scripts listeners that will be executed before/after some events.
      *
      * @var array
-     * @ORM\Column(name="scripts", type="Array", nullable=true)
+     * @ORM\Column(name="scripts", type="array", nullable=true)
      */
     protected $scripts;
 

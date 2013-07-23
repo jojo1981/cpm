@@ -47,6 +47,14 @@ abstract class Package implements PackageInterface
     protected $packageVersions;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->packageVersions = new ArrayCollection();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getId()
