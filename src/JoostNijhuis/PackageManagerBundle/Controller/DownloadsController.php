@@ -84,11 +84,12 @@ class DownloadsController extends Controller
 
             $pool = new Pool('alpha');
             $pool->addRepository($repositories);
-
             $matches = $pool->whatProvides($search, $constraint);
-            /** @var CompletePackage $package */
+
+            /** @var \Composer\Package\BasePackage $package */
             foreach ($matches as $index => $package) {
-                if ($package->getVersion() === $versionNormalized) {
+                if ($package->getName() === $search
+                    && $package->getVersion() === $versionNormalized) {
                     $objPackage = $package;
                     break;
                 }
