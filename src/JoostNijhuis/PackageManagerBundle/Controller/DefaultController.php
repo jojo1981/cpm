@@ -9,6 +9,11 @@
  */
 namespace JoostNijhuis\PackageManagerBundle\Controller;
 
+use Composer\Composer;
+use Composer\Config;
+use Composer\IO\NullIO;
+use Composer\Package\BasePackage;
+use Composer\Repository\ComposerRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -62,5 +67,28 @@ class DefaultController extends Controller
             'arrPackages'  => $arrPackageData, 
             'json_example' => $json_example, 
         );
+    }
+
+    /**
+     * @Route("/index2")
+     */
+    public function index2Action()
+    {
+        $io = new NullIO();
+        $repoConfig = array(
+            'url' => 'https://packages.zendframework.com/'
+        );
+        $config = new Config();
+        unset(Config::$defaultRepositories['packagist']);
+        $config->merge(array('config' => array('home' => '')));
+
+        $repo = new ComposerRepository($repoConfig, $io, $config);
+
+        /** @var BasePackage $package */
+        foreach ($repo->getPackages() as $package) {
+            echo get_class($package) . ": " . $package->getPrettyString() . "<br />";
+        }
+        //var_dump(count($packages));
+        die;
     }
 }
