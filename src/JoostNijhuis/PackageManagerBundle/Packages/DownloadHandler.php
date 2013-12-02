@@ -13,6 +13,8 @@ use Composer\Factory;
 use Composer\IO\NullIO;
 use Composer\Package\PackageInterface;
 use Composer\Util\Filesystem;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Composer\Downloader\DownloaderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use JoostNijhuis\PackageManagerBundle\Builder\Config\Config;
@@ -40,7 +42,7 @@ class DownloadHandler
     protected $package_dir;
 
     /**
-     * @var \JoostNijhuis\PackageManagerBundle\Packages\SvnAuthentication
+     * @var SvnAuthentication
      */
     protected $svnAuthentication;
 
@@ -67,7 +69,6 @@ class DownloadHandler
      * the svn url's.
      *
      * @param SvnAuthentication $svnAuthentication
-     * @return void
      */
     public function setSvnAuthentication(SvnAuthentication $svnAuthentication)
     {
@@ -106,6 +107,8 @@ class DownloadHandler
             $objDownload = $this->getDownloader($package);
             $objDownload->download($package, $tmpDirPackage);
 
+            $this->cleanup($tmpDirPackage);
+
             $objZipArchive = new ZipArchive();
             $objZipArchive->open($package_file, ZIPARCHIVE::CREATE);
             $objZipArchive->AddDirectory($tmpDirPackage);
@@ -115,6 +118,67 @@ class DownloadHandler
         }
 
         return $package_file;
+    }
+
+    /**
+     * Remove svn, git, hg etc.. files from passed directory
+     *
+     * @param string $directory
+     */
+    protected function cleanup($directory)
+    {
+        $fs = new Filesystem();
+
+        $finder = new Finder();
+        $finder
+            ->in($directory)
+            ->ignoreVCS(false)
+            ->ignoreDotFiles(false)
+        ;
+        $this->addFilesToDeleteToFinder($finder);
+
+        $found = array();
+
+        /** @var SplFileInfo $file */
+        foreach ($finder as $file) {
+            $found[] = $file->getRealPath();
+        }
+
+        foreach ($found as $fileName) {
+            if (file_exists($fileName)) {
+                $fs->remove($fileName);
+            }
+        }
+    }
+
+    /**
+     * @param Finder $finder
+     */
+    protected function addFilesToDeleteToFinder(Finder $finder)
+    {
+        foreach ($this->getFilesToDelete() as $file) {
+            $finder->name($file);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    protected function getFilesToDelete()
+    {
+        return array(
+            '.svn',
+            '_svn',
+            'CVS',
+            '_darcs',
+            '.arch-params',
+            '.monotone',
+            '.bzr',
+            '.git',
+            '.gitkeep',
+            '.gitignore',
+            '.hg'
+        );
     }
 
     /**
@@ -199,7 +263,6 @@ class DownloadHandler
      * directory exists
      *
      * @param string $directory
-     * @return void
      * @throws \Exception
      */
     protected function setTempDirectory($directory)
