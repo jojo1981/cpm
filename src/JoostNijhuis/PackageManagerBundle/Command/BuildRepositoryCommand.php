@@ -9,7 +9,7 @@
  */
 namespace JoostNijhuis\PackageManagerBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use JoostNijhuis\PackageManagerBundle\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use JoostNijhuis\PackageManagerBundle\Builder\RepositoryBuilder;
@@ -17,7 +17,7 @@ use JoostNijhuis\PackageManagerBundle\Builder\RepositoryBuilder;
 /**
  * JoostNijhuis\PackageManagerBundle\Command\BuildRepositoryCommand
  */
-class BuildRepositoryCommand extends ContainerAwareCommand
+class BuildRepositoryCommand extends AbstractCommand
 {
     /**
      * {@inheritDoc}
@@ -29,17 +29,43 @@ class BuildRepositoryCommand extends ContainerAwareCommand
             ->setDescription('Build the whole composer repository')
             ->setDefinition(array())
             ->setHelp(<<<EOT
-The <info>joost_nijhuis_package_manager:build:repository</info> create a locally
+The <info>%command.name%</info> create a locally
 index of the whole packagist repository, add private packages and parse packages.
 EOT
-        );
+            );
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getProcessName()
     {
+        return 'build';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function mustWait()
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getTimeOut()
+    {
+        return 60*10;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function runProcess(
+        InputInterface $input,
+        OutputInterface $output
+    ) {
         /** @var RepositoryBuilder $repositoryBuilder */
         $repositoryBuilder = $this->getContainer()->get(
             'joost_nijhuis_package_manager.repository_builder'

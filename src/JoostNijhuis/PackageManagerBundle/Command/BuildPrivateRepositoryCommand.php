@@ -9,7 +9,7 @@
  */
 namespace JoostNijhuis\PackageManagerBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use JoostNijhuis\PackageManagerBundle\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use JoostNijhuis\PackageManagerBundle\Builder\RepositoryBuilder;
@@ -23,7 +23,7 @@ use JoostNijhuis\PackageManagerBundle\Builder\RepositoryBuilder;
  * If there are any new versions in SVN or on GitHup etc... they will be
  * registered into the private packages part of the repository.
  */
-class BuildPrivateRepositoryCommand extends ContainerAwareCommand
+class BuildPrivateRepositoryCommand extends AbstractCommand
 {
     /**
      * {@inheritDoc}
@@ -35,7 +35,7 @@ class BuildPrivateRepositoryCommand extends ContainerAwareCommand
             ->setDescription('Build private packages repository')
             ->setDefinition(array())
             ->setHelp(<<<EOT
-The <info>joost_nijhuis_package_manager:build:private_repository</info> command reads the configured json file
+The <info>%command.name%</info> command reads the configured json file
 and outputs a composer repository in the configured output-dir.
 EOT
         );
@@ -44,8 +44,34 @@ EOT
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getProcessName()
     {
+        return 'build';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function mustWait()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getTimeOut()
+    {
+        return 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function runProcess(
+        InputInterface $input,
+        OutputInterface $output
+    ) {
         /** @var RepositoryBuilder $builder */
         $builder = $this->getContainer()->get(
             'joost_nijhuis_package_manager.repository_builder'
