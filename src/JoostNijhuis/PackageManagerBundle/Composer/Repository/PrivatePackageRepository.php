@@ -50,14 +50,8 @@ class PrivatePackageRepository extends ArrayRepository
                 foreach ($packageData as $version => $data) {
                     try {
                         $package = $loader->load($data);
-                    } catch (\Exception $e) {
-                        throw new InvalidRepositoryException(sprintf(
-                            "A repository of type 'package' contains an invalid package definition: %s \n\nInvalid package definition: %s\n",
-                            $e->getMessage(),
-                            print_r($data, true)
-                        ));
-                    }
-                    $this->addPackage($package);
+                        $this->addPackage($package);
+                    } catch (\Exception $e) {}
                 }
             }
         }
