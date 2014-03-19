@@ -54,7 +54,7 @@ class PrivatePackageRepository extends ArrayRepository
                         throw new InvalidRepositoryException(sprintf(
                             "A repository of type 'package' contains an invalid package definition: %s \n\nInvalid package definition: %s\n",
                             $e->getMessage(),
-                            print_r($data)
+                            print_r($data, true)
                         ));
                     }
                     $this->addPackage($package);
